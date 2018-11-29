@@ -1,6 +1,6 @@
 import gzip
 import os
-from zlib import crc32
+from crc32c import crc32
 import snappy
 from recordio import Header, Compressor
 from recordio.global_variables import code_type, int_word_len, endian
