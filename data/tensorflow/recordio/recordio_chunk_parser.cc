@@ -7,7 +7,7 @@
 namespace tensorflow {
 namespace io {
 
-Status ChunkParser::ReadNBytes(std::unique_ptr<InputStreamInterface> &input_stream,
+Status ChunkParser::ReadNBytes(InputStreamInterface* input_stream,
                          uint64 offset,
                          size_t n,
                          string* result) {
@@ -24,12 +24,12 @@ Status ChunkParser::ReadNBytes(std::unique_ptr<InputStreamInterface> &input_stre
   return Status::OK();
 }
 
-Status ChunkParser::Parse(std::unique_ptr<InputStreamInterface> &input_stream,
+Status ChunkParser::Parse(InputStreamInterface* input_stream,
                     uint64* offset,
-                    std::unique_ptr<Chunk> &chunk) {
+                    std::vector<std::string>& records) {
   // Read chunk header from `input_stream`.
   string chunk_header;
-  ReadNBytes(input_stream, *offset, kHeaderSize_, &chunk_header);
+  TF_RETURN_IF_ERROR(ReadNBytes(input_stream, *offset, kHeaderSize_, &chunk_header));
 
   const char *hdr_data= chunk_header.data();
   const uint32 num_records_ = core::DecodeFixed32(hdr_data + sizeof(uint32));
@@ -44,7 +44,7 @@ Status ChunkParser::Parse(std::unique_ptr<InputStreamInterface> &input_stream,
   string chunk_data;
   string decompressed_data;
   const char* data = nullptr;
-  ReadNBytes(input_stream, *offset, compress_size, &chunk_data);
+  TF_RETURN_IF_ERROR(ReadNBytes(input_stream, *offset, compress_size, &chunk_data));
   *offset += compress_size;
 
   // CRC32 check.
@@ -53,20 +53,25 @@ Status ChunkParser::Parse(std::unique_ptr<InputStreamInterface> &input_stream,
   }
 
   // Decompress chunk data using specified algorithm.
-  if (compression_type_ == SNAPPY) {
-    SnappyDecompress(&chunk_data, &decompressed_data);
-    data = decompressed_data.data();
-  }
-  else if (compression_type_ == GZIP) {
-    GzipDecompress(&chunk_data, &decompressed_data);
-    data = decompressed_data.data();
-  }
-  else if (compression_type_ == ZLIB) {
-    ZlibDecompress(&chunk_data, &decompressed_data);
-    data = decompressed_data.data();
-  }
-  else {
-    data = chunk_data.data();
+  switch (core::DecodeFixed32(hdr_data + sizeof(uint32) * 3)) {
+    case SNAPPY: {
+      SnappyDecompress(&chunk_data, &decompressed_data);
+      data = decompressed_data.data();
+      break;
+    }
+    case GZIP: {
+      GzipDecompress(&chunk_data, &decompressed_data);
+      data = decompressed_data.data();
+      break;
+    }
+    case ZLIB: {
+      ZlibDecompress(&chunk_data, &decompressed_data);
+      data = decompressed_data.data();
+      break;
+    }
+    default: {
+      data = chunk_data.data();
+    }
   }
 
   // Parse the decompressed chunk data.
@@ -75,7 +80,7 @@ Status ChunkParser::Parse(std::unique_ptr<InputStreamInterface> &input_stream,
     const uint32 record_len =  core::DecodeFixed32(data + record_offset);
     record_offset += sizeof(uint32);
     const string &record = decompressed_data.substr(record_offset, record_len);
-    chunk->Add(record);
+    records.emplace_back(record);
     record_offset += record_len;
   }
   return Status::OK();

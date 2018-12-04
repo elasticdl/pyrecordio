@@ -9,23 +9,18 @@ namespace io {
 
 class Chunk {
   public:
-    Chunk()
+    Chunk(const std::vector<std::string>& records)
         : num_records_(0), 
-          cur_record_idx_(0) {}
+          cur_record_idx_(0),
+          records_(records) {}
     
     virtual ~Chunk() = default;
-
-    // Called before go to parse the next chunk in a recordio file.
-    Status Reset();
 
     // Return true if there is still record in the current chunk data.
     bool HasNext();
 
     // Return the next record in the current chunk.
     Status Next(string* record);
-
-    // Add new record into the current chunk.
-    Status Add(const string& record);
 
   private:
     // Total number of records in current chunk.

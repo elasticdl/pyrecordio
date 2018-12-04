@@ -18,13 +18,13 @@ class ChunkParser {
     ~ChunkParser() = default;
 
     // Parse the next chunk block in the `input_stream` starting from `offset`.
-    Status Parse(std::unique_ptr<InputStreamInterface> &input_stream,
+    Status Parse(InputStreamInterface* input_stream,
                  uint64* offset, 
-                 std::unique_ptr<Chunk> &chunk);
+                 std::vector<std::string>& records);
 
   private:
     // Read `n` bytes from the `offset` into `result` string.
-    Status ReadNBytes(std::unique_ptr<InputStreamInterface> &input_stream,
+    Status ReadNBytes(InputStreamInterface* input_stream,
                       uint64 offset,
                       size_t n,
                       string* result);

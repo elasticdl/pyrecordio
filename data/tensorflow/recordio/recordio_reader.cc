@@ -32,8 +32,9 @@ Status RecordIOReader::ReadRecord(string* record) {
   // It is RecordIOReader who is responsible for handling multi-chunks 
   // in single recordio file.
   if (ReachEndOfChunk()) {
-    chunk_.reset(new Chunk());
-    parser_.Parse(input_stream_, &offset_, chunk_);
+    std::vector<std::string> records;
+    parser_.Parse(input_stream_.get(), &offset_, records);
+    chunk_.reset(new Chunk(records));
     ++cur_chunknum_;
 
     // Check the offset for each chunk.
