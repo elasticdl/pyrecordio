@@ -24,6 +24,8 @@ class ChunkParser {
 
   private:
     // Read `n` bytes from the `offset` into `result` string.
+    // TODO: add MUST_USE_RESULT using 
+    // `https://github.com/abseil/abseil-cpp/blob/master/absl/base/attributes.h`
     Status ReadNBytes(InputStreamInterface* input_stream,
                       uint64 offset,
                       size_t n,
