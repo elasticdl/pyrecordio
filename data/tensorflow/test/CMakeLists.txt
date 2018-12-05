@@ -17,8 +17,8 @@ LINK_DIRECTORIES(${LINK_DIR})
 INCLUDE_DIRECTORIES(/usr/include/gtest)
 LINK_DIRECTORIES(/usr/local/lib/gtest)
 
-ADD_EXECUTABLE(recordio_dataset_op_test ${DIR_SRCS} /home/chris/project/github/pyrecordio/data/tensorflow/recordio)
+ADD_EXECUTABLE(recordio_dataset_op_test ${DIR_SRCS} ../recordio)
 TARGET_LINK_LIBRARIES(recordio_dataset_op_test libgtest.so libgtest_main.so libtensorflow_framework.so)
 
-enable_testing()
-add_test(NAME recordio_dataset_op_test COMMAND recordio_dataset_op_test)
+ENABLE_TESTING()
+ADD_TEST(NAME recordio_dataset_op_test COMMAND recordio_dataset_op_test)

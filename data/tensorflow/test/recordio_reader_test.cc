@@ -1,4 +1,5 @@
 #include "gtest/gtest.h"
+#include "recordio/recordio_reader.h"
 
 TEST(Dummy, foobar)
 {
