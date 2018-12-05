@@ -2,6 +2,7 @@
 #define ELASTICDL_RECORDIO_READER_H_
 
 #include "recordio_chunk.h"
+#include "recordio_chunk_parser.h"
 #include "recordio_index.h"
 
 namespace tensorflow {
@@ -39,8 +40,9 @@ class RecordIOReader {
 
  private:
   bool ReachEndOfChunk() {
-    return !chunk_.HasNext() && cur_chunknum_ < desired_chunknum_ && 
-      cur_chunknum_ < file_index_.GetTotalChunkNum();
+    return (chunk_.get() == NULL || (!chunk_->HasNext() && 
+      cur_chunknum_ < desired_chunknum_ && 
+      cur_chunknum_ < file_index_.GetTotalChunkNum()));
   }
 
   // Input stream for recordio file.
@@ -64,7 +66,8 @@ class RecordIOReader {
   FileIndex file_index_;
 
   // Current processing chunk.
-  Chunk chunk_;
+  std::unique_ptr<Chunk> chunk_; 
+  ChunkParser parser_;
 
   TF_DISALLOW_COPY_AND_ASSIGN(RecordIOReader);
 };
