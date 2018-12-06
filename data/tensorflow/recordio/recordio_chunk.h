@@ -10,22 +10,15 @@ namespace io {
 class Chunk {
   public:
     Chunk(const std::vector<std::string>& records)
-        : num_records_(0), 
-          cur_record_idx_(0),
+        : cur_record_idx_(0),
           records_(records) {}
     
     virtual ~Chunk() = default;
-
-    // Return true if there is still record in the current chunk data.
-    bool HasNext();
 
     // Return the next record in the current chunk.
     Status Next(string* record);
 
   private:
-    // Total number of records in current chunk.
-    uint32 num_records_;
-
     // Current processing record index of the chunk. 
     size_t cur_record_idx_;
  

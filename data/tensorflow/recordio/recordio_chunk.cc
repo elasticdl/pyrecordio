@@ -3,11 +3,10 @@
 namespace tensorflow {
 namespace io {
 
-bool Chunk::HasNext() {
-  return cur_record_idx_ < records_.size();
-}
-
 Status Chunk::Next(string* record) {
+  if (cur_record_idx_ >= records_.size()) {
+    return errors::OutOfRange("record index out of range");
+  }
   string src_record = records_.at(cur_record_idx_++);
   record->clear();
   record->resize(src_record.size());

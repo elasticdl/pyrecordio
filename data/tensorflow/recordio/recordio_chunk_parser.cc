@@ -27,6 +27,10 @@ Status ChunkParser::ReadNBytes(InputStreamInterface* input_stream,
 Status ChunkParser::Parse(InputStreamInterface* input_stream,
                     uint64* offset,
                     std::vector<std::string>& records) {
+  // Reset file offset for chunk processing.
+  input_stream->Reset();
+  input_stream->SkipNBytes(*offset);
+
   // Read chunk header from `input_stream`.
   string chunk_header;
   TF_RETURN_IF_ERROR(ReadNBytes(input_stream, *offset, kHeaderSize_, &chunk_header));
