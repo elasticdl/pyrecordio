@@ -12,9 +12,9 @@ class TestHeader(unittest.TestCase):
     def test_write_reader_no_flush(self):
         with tempfile.NamedTemporaryFile() as tmp_file:
             writer = Writer(tmp_file, 1000, Compressor(1))
-            writer.write('china')
-            writer.write('usa')
-            writer.write('russia')
+            writer.write(b'china')
+            writer.write(b'usa')
+            writer.write(b'russia')
             writer.flush()
 
             tmp_file.seek(0)
@@ -26,9 +26,9 @@ class TestHeader(unittest.TestCase):
     def test_write_reader_auto_flush(self):
         with tempfile.NamedTemporaryFile() as tmp_file:
             writer = Writer(tmp_file, 10, Compressor(1))
-            writer.write('china')
-            writer.write('usa')
-            writer.write('russia')
+            writer.write(b'china')
+            writer.write(b'usa')
+            writer.write(b'russia')
             writer.flush()
 
             tmp_file.seek(0)

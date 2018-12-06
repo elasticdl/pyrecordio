@@ -26,7 +26,7 @@ class Writer(object):
         Returns:
           True if write operation execute successfully.
         """
-        if self._chunk.num_bytes() + len(record.encode(code_type)) > self._max_chunk_size:
+        if self._chunk.num_bytes() + len(record) > self._max_chunk_size:
             self._chunk.write(self._out_file, self._compressor)
             self._chunk.clear()
 

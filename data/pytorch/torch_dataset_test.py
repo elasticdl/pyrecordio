@@ -11,26 +11,26 @@ class TestTorchDataset(unittest.TestCase):
    
     def test_dataset(self):
         data_source = [
-            'china',
-            'usa',
-            'russia',
-            'india',
-            'thailand',
-            'finland',
-            'france',
-            'germany',
-            'poland',
-            'san marino',
-            'sweden',
-            'neuseeland',
-            'argentina',
-            'canada',
-            'ottawa',
-            'bogota',
-            'panama',
-            'united states',
-            'brazil',
-            'barbados']
+            b'china',
+            b'usa',
+            b'russia',
+            b'india',
+            b'thailand',
+            b'finland',
+            b'france',
+            b'germany',
+            b'poland',
+            b'san marino',
+            b'sweden',
+            b'neuseeland',
+            b'argentina',
+            b'canada',
+            b'ottawa',
+            b'bogota',
+            b'panama',
+            b'united states',
+            b'brazil',
+            b'barbados']
 
         # this tmp file will be closed in File.close()
         tmpfile_name = tempfile.NamedTemporaryFile().name

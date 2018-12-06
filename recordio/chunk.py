@@ -3,7 +3,7 @@ import os
 from crc32c import crc32
 import snappy
 from recordio import Header, Compressor
-from recordio.global_variables import code_type, int_word_len, endian
+from recordio.global_variables import int_word_len, endian
 
 
 class Chunk(object):
@@ -15,8 +15,6 @@ class Chunk(object):
         self._records = []
         # Total byte size of current records
         self._num_bytes = 0
-        # Total count of the records
-        self._total_count = 0
 
     def add(self, record):
         """ Add a new string record value to this chunk
@@ -24,10 +22,11 @@ class Chunk(object):
         Arguments:
           record: A python3 byte class representing a record
         """
-        byte_arr = record.encode(code_type)
-        self._num_bytes += len(byte_arr)
-        self._total_count += 1
-        self._records.append(byte_arr)
+        if not isinstance(record, bytes):
+            raise ValueError('Expect bytes type, got: ' + type(record))
+            
+        self._num_bytes += len(record)
+        self._records.append(record)
 
     def get(self, index):
         """ Get a record string at the specified index position
@@ -38,14 +37,13 @@ class Chunk(object):
         Returns:
           A string value represending the specified record
         """
-        return self._records[index].decode(code_type)
+        return self._records[index]
 
     def clear(self):
         """ Clear and reset the current chunk for reuse
         """
         self._records = []
         self._num_bytes = 0
-        self._total_count = 0
 
     def write(self, out_file, compressor):
         """ Write the chunk to the output file.
@@ -60,7 +58,7 @@ class Chunk(object):
         Raises:
           ValueError: invalid compressor
         """
-        if self._total_count <= 0:
+        if not self._records:
             return True
 
         # Compress the data according to compressor type
@@ -91,7 +89,7 @@ class Chunk(object):
         # Write chunk header into output file
         checksum = crc32(compressed_data)
         header = Header(
-            self._total_count,
+            self.total_count(),
             checksum,
             compressor,
             len(compressed_data))
@@ -151,13 +149,12 @@ class Chunk(object):
         else:
             raise ValueError('invalid compressor')
 
-        record_count = 0
-        records = []
+        self.clear()
         curr_index = 0
         s_index = 0
         e_index = 0
         total_bytes = 0
-        while record_count < header.total_count():
+        for _ in range(header.total_count()):
             rc_len = int.from_bytes(
                 uncompressed_byte_arr[curr_index:curr_index + int_word_len], endian)
             s_index = curr_index + int_word_len
@@ -165,14 +162,9 @@ class Chunk(object):
             total_bytes += rc_len
 
             # Read real data
-            records.append(uncompressed_byte_arr[s_index:e_index])
-            record_count += 1
+            self.add(uncompressed_byte_arr[s_index:e_index])
             curr_index += int_word_len
             curr_index += rc_len
-
-        self._num_bytes = total_bytes
-        self._total_count = record_count
-        self._records = records
 
         return True
 
@@ -182,7 +174,7 @@ class Chunk(object):
         Returns:
           current total records size
         """
-        return self._total_count
+        return len(self._records)
 
     def num_bytes(self):
         """ Return current total bytes size in the chunk
