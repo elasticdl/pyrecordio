@@ -6,18 +6,15 @@ using namespace tensorflow;
 
 REGISTER_OP("RecordioDataset")
     .Input("filename: string")
-    .Input("start_chunk: int64")
-    .Input("chunk_count: int64")
+    .Input("offset: int64")
     .Output("handle: variant")
     .SetIsStateful()  
     .SetShapeFn([](shape_inference::InferenceContext* c) {
       shape_inference::ShapeHandle unused;
       // `filename` must be a scalar.
       TF_RETURN_IF_ERROR(c->WithRankAtMost(c->input(0), 1, &unused));
-      // `start_chunk` could only be a scalar.
+      // `offset` could only be a scalar.
       TF_RETURN_IF_ERROR(c->WithRank(c->input(1), 0, &unused));
-      // `chunk_count` could only be a scalar.
-      TF_RETURN_IF_ERROR(c->WithRank(c->input(2), 0, &unused));
       return shape_inference::ScalarShape(c);
     });
 
@@ -33,33 +30,26 @@ class RecordIODatasetOp : public DatasetOpKernel {
                 errors::InvalidArgument(
                     "invalid argument value for `filename`")); 
 
-    int64 start_chunk = -1;
+    int64 offset = -1;
     OP_REQUIRES_OK(
-        ctx, ParseScalarArgument<int64>(ctx, "start_chunk", &start_chunk));
-    OP_REQUIRES(ctx, start_chunk>= 0,
+        ctx, ParseScalarArgument<int64>(ctx, "offset", &offset));
+    OP_REQUIRES(ctx, offset>= 0,
                 errors::InvalidArgument(
-                    "`start_chunk` must be >= 0"));
-
-    int64 chunk_count = -1;
-    OP_REQUIRES_OK(
-        ctx, ParseScalarArgument<int64>(ctx, "chunk_count", &chunk_count));
-    OP_REQUIRES(ctx, chunk_count>= 0,
-                errors::InvalidArgument(
-                    "`chunk_count` must be >= 0 (0 means read all the chunks)"));
+                    "`offset` must be >= 0"));
 
     *output =
-        new Dataset(ctx, filename, start_chunk, chunk_count);
+        new Dataset(ctx, filename, offset);
   }
 
  private:
   class Dataset : public GraphDatasetBase {
    public:
-    explicit Dataset(OpKernelContext* ctx, const string& filename,
-                     int64 start_chunk, int64 chunk_count)
+    explicit Dataset(OpKernelContext* ctx, 
+                     const string& filename,
+                     int64 offset)
         : GraphDatasetBase(ctx),
-          filename_(std::move(filename)),
-          start_chunk_(start_chunk),
-          chunk_count_(chunk_count) {}
+          filename_(filename),
+          offset_(offset) {}
 
     std::unique_ptr<IteratorBase> MakeIteratorInternal(
         const string& prefix) const override {
@@ -85,12 +75,10 @@ class RecordIODatasetOp : public DatasetOpKernel {
                               Node** output) const override {
       Node* filename = nullptr;
       TF_RETURN_IF_ERROR(b->AddScalar(filename_, &filename));
-      Node* start_chunk = nullptr;
-      TF_RETURN_IF_ERROR(b->AddScalar(start_chunk_, &start_chunk));
-      Node* chunk_count = nullptr;
-      TF_RETURN_IF_ERROR(b->AddScalar(chunk_count_, &chunk_count));
+      Node* offset = nullptr;
+      TF_RETURN_IF_ERROR(b->AddScalar(offset_, &offset));
       TF_RETURN_IF_ERROR(b->AddDataset(
-          this, {filename, start_chunk, chunk_count}, output));
+          this, {filename, offset}, output));
       return Status::OK();
     }
 
@@ -117,8 +105,6 @@ class RecordIODatasetOp : public DatasetOpKernel {
               return s;
             }
 
-            // We have reached the end of the current file, so maybe
-            // move on to next file.
             ResetStreamsLocked();
             *end_of_sequence = true;
             return Status::OK();
@@ -162,7 +148,7 @@ class RecordIODatasetOp : public DatasetOpKernel {
         TF_RETURN_IF_ERROR(env->GetFileSize(filename, &file_size));
 
         reader_.reset(
-            new io::RecordIOReader(file_.get(), file_size, dataset()->start_chunk_, dataset()->chunk_count_));
+            new io::RecordIOReader(file_.get(), dataset()->offset_));
 
         return Status::OK();
       }
@@ -181,8 +167,7 @@ class RecordIODatasetOp : public DatasetOpKernel {
       std::unique_ptr<io::RecordIOReader> reader_ GUARDED_BY(mu_);
     }; // Iterator
 
-    int64 start_chunk_;
-    int64 chunk_count_;
+    int64 offset_;
     string filename_;
   }; // Dataset
 };

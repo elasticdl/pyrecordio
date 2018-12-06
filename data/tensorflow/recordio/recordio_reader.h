@@ -14,9 +14,7 @@ namespace io {
 class RecordIOReader {
  public:
   RecordIOReader(RandomAccessFile* file,
-                 uint64 file_size,
-                 size_t chunk_index,
-                 size_t desired_chunknum);
+                 size_t offset);
 
   virtual ~RecordIOReader() = default;
 
@@ -24,7 +22,7 @@ class RecordIOReader {
   // Returns OK on success.
   Status ReadRecord(string* record);
 
-  // Returns the current offset in the file.
+  // Returns the current offset of the specified chunk.
   uint64 TellOffset() { return offset_; }
 
   // Reset the logic offset of recordio. 
@@ -39,31 +37,11 @@ class RecordIOReader {
   }
 
  private:
-  bool ReachEndOfChunk() {
-    return (chunk_.get() == NULL || (!chunk_->HasNext() && 
-      cur_chunknum_ < desired_chunknum_ && 
-      cur_chunknum_ < file_index_.GetTotalChunkNum()));
-  }
-
   // Input stream for recordio file.
   std::unique_ptr<InputStreamInterface> input_stream_;
 
-  // The size in bytes of recordIO file.
-  uint64 file_size_;
-
-  // Current read offset of the recordio file.
+  // Current read offset of the specified chunk.
   uint64 offset_;
-
-  // The start chunk number(>=1) to read from.
-  uint32 start_chunk_;
-
-  // Total desired processing chunk count.
-  uint32 desired_chunknum_;
-
-  // Current chunk number already processed.
-  size_t cur_chunknum_;
-
-  FileIndex file_index_;
 
   // Current processing chunk.
   std::unique_ptr<Chunk> chunk_; 
