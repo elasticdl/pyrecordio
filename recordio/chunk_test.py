@@ -10,9 +10,9 @@ class TestHeader(unittest.TestCase):
 
     def test_add_and_get(self):
         chunk = Chunk()
-        record1 = 'china'
-        record2 = 'usa'
-        record3 = 'russia'
+        record1 = b'china'
+        record2 = b'usa'
+        record3 = b'russia'
         chunk.add(record1)
         chunk.add(record2)
         chunk.add(record3)
@@ -23,9 +23,9 @@ class TestHeader(unittest.TestCase):
 
     def test_clear(self):
         chunk = Chunk()
-        record1 = 'china'
-        record2 = 'usa'
-        record3 = 'russia'
+        record1 = b'china'
+        record2 = b'usa'
+        record3 = b'russia'
         chunk.add(record1)
         chunk.add(record2)
         chunk.add(record3)
@@ -36,9 +36,9 @@ class TestHeader(unittest.TestCase):
 
     def test_write_and_parse(self):
         chunk = Chunk()
-        record1 = 'china'
-        record2 = 'usa'
-        record3 = 'russia'
+        record1 = b'china'
+        record2 = b'usa'
+        record3 = b'russia'
         chunk.add(record1)
         chunk.add(record2)
         chunk.add(record3)

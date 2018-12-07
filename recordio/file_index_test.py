@@ -13,9 +13,9 @@ class TestFileIndex(unittest.TestCase):
     def test_one_chunk(self):
         with tempfile.NamedTemporaryFile() as tmp_file:
             writer = Writer(tmp_file, 1000, Compressor(1))
-            writer.write('china')
-            writer.write('usa')
-            writer.write('russia')
+            writer.write(b'china')
+            writer.write(b'usa')
+            writer.write(b'russia')
             writer.flush()
 
             tmp_file.seek(0)
@@ -27,9 +27,9 @@ class TestFileIndex(unittest.TestCase):
     def test_two_chunk(self):
         with tempfile.NamedTemporaryFile() as tmp_file:
             writer = Writer(tmp_file, 10, Compressor(1))
-            writer.write('china')
-            writer.write('usa')
-            writer.write('russia')
+            writer.write(b'china')
+            writer.write(b'usa')
+            writer.write(b'russia')
             writer.flush()
 
             tmp_file.seek(0)
@@ -41,26 +41,26 @@ class TestFileIndex(unittest.TestCase):
 
     def test_usage(self):
         data_source = [
-            'china',
-            'usa',
-            'russia',
-            'india',
-            'thailand',
-            'finland',
-            'france',
-            'germany',
-            'poland',
-            'san marino',
-            'sweden',
-            'neuseeland',
-            'argentina',
-            'canada',
-            'ottawa',
-            'bogota',
-            'panama',
-            'united states',
-            'brazil',
-            'barbados']
+            b'china',
+            b'usa',
+            b'russia',
+            b'india',
+            b'thailand',
+            b'finland',
+            b'france',
+            b'germany',
+            b'poland',
+            b'san marino',
+            b'sweden',
+            b'neuseeland',
+            b'argentina',
+            b'canada',
+            b'ottawa',
+            b'bogota',
+            b'panama',
+            b'united states',
+            b'brazil',
+            b'barbados']
 
         with tempfile.NamedTemporaryFile() as tmp_file:
             writer = Writer(tmp_file, 20)
@@ -84,8 +84,8 @@ class TestFileIndex(unittest.TestCase):
         with tempfile.NamedTemporaryFile() as data:
             max_chunk_size = 1024
             writer = Writer(data, max_chunk_size)
-            writer.write('abc')
-            writer.write('edf')
+            writer.write(b'abc')
+            writer.write(b'edf')
             writer.flush()
 
             data.seek(0)
@@ -94,26 +94,26 @@ class TestFileIndex(unittest.TestCase):
 
     def test_locate_record(self):
         data_source = [
-            'china',
-            'usa',
-            'russia',
-            'india',
-            'thailand',
-            'finland',
-            'france',
-            'germany',
-            'poland',
-            'san marino',
-            'sweden',
-            'neuseeland',
-            'argentina',
-            'canada',
-            'ottawa',
-            'bogota',
-            'panama',
-            'united states',
-            'brazil',
-            'barbados']
+            b'china',
+            b'usa',
+            b'russia',
+            b'india',
+            b'thailand',
+            b'finland',
+            b'france',
+            b'germany',
+            b'poland',
+            b'san marino',
+            b'sweden',
+            b'neuseeland',
+            b'argentina',
+            b'canada',
+            b'ottawa',
+            b'bogota',
+            b'panama',
+            b'united states',
+            b'brazil',
+            b'barbados']
 
         with tempfile.NamedTemporaryFile() as tmp_file:
             writer = Writer(tmp_file, 20)
