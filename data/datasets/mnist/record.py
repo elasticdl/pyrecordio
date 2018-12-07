@@ -13,7 +13,7 @@ def decode(record):
     parsed = np.frombuffer(record, dtype="uint8")
     assert len(parsed) == N * N + 1
     label = parsed[-1]
-    parsed = np.resize(parsed[:-1], new_shape=(28, 28))
+    parsed = np.resize(parsed[:-1], new_shape=(N, N))
     return (parsed, label)
 
 
