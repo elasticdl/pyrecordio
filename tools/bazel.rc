@@ -1,0 +1,2 @@
+build --cxxopt='-std=c++11' 
+build --copt  -I/usr/local/include/tensorflow/include
