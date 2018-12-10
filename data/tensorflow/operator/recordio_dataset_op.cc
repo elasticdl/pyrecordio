@@ -1,6 +1,6 @@
 #include "tensorflow/core/framework/dataset.h"
 #include "tensorflow/core/framework/common_shape_fns.h"
-#include "recordio/recordio_reader.h"
+#include "data/tensorflow/recordio/recordio_reader.h"
 
 using namespace tensorflow;
 
