@@ -1,0 +1,6 @@
+# https://docs.bazel.build/versions/master/be/c-cpp.html#cc_library
+cc_library(
+    name = "recordio_dataset_op",
+    srcs = ["recordio_dataset_op.cc"],
+    deps = ["//data/tensorflow/recordio:reader"],
+)
