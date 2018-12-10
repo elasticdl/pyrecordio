@@ -2,6 +2,7 @@ import unittest
 import tensorflow as tf
 from tf_recordio_dataset import RecordIODataset
 
+
 class TestRecordioDataset(unittest.TestCase):
     """ Test tf_recordio_dataset_test.py
     """
