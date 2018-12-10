@@ -2,11 +2,6 @@ import unittest
 import tensorflow as tf
 from tf_recordio_dataset import RecordIODataset
 
-# Test using CPU 
-import os
-os.environ["CUDA_VISIBLE_DEVICES"]="-1"
-
-
 class TestRecordioDataset(unittest.TestCase):
     """ Test tf_recordio_dataset_test.py
     """

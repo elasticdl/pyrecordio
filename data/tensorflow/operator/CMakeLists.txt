@@ -6,9 +6,9 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -shared -fPIC -Xlinker --unresolved-symb
 SET(LOCAL_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 SET(LOCAL_LIB_DIR ${CMAKE_SOURCE_DIR}/recordio)
 
-EXECUTE_PROCESS(COMMAND python -c "import tensorflow as tf; print(tf.sysconfig.get_include(), end='')"
+EXECUTE_PROCESS(COMMAND python3 -c "import tensorflow as tf; print(tf.sysconfig.get_include(), end='')"
                 OUTPUT_VARIABLE HEADER_DIR)
-EXECUTE_PROCESS(COMMAND python -c "import tensorflow as tf; print(tf.sysconfig.get_lib(), end='')"
+EXECUTE_PROCESS(COMMAND python3 -c "import tensorflow as tf; print(tf.sysconfig.get_lib(), end='')"
                 OUTPUT_VARIABLE LINK_DIR)
 
 AUX_SOURCE_DIRECTORY(. DIR_SRCS)
