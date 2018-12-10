@@ -42,12 +42,12 @@ class RecordIODatasetOp : public DatasetOpKernel {
   }
 
  private:
-  class Dataset : public GraphDatasetBase {
+  class Dataset : public DatasetBase {
    public:
     explicit Dataset(OpKernelContext* ctx, 
                      const string& filename,
                      int64 offset)
-        : GraphDatasetBase(ctx),
+        : DatasetBase(DatasetContext(ctx)),
           filename_(filename),
           offset_(offset) {}
 
@@ -71,7 +71,8 @@ class RecordIODatasetOp : public DatasetOpKernel {
     string DebugString() const override { return "RecordIODatasetOp::Dataset"; }
 
    protected:
-    Status AsGraphDefInternal(DatasetGraphDefBuilder* b,
+    Status AsGraphDefInternal(SerializationContext* ctx,
+                              DatasetGraphDefBuilder* b,
                               Node** output) const override {
       Node* filename = nullptr;
       TF_RETURN_IF_ERROR(b->AddScalar(filename_, &filename));

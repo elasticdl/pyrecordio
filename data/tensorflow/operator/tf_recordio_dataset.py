@@ -21,6 +21,9 @@ class RecordIODataset(tf.data.Dataset):
 
   def _as_variant_tensor(self):
     return recordio.recordio_dataset(self._filename, self._offset)
+  
+  def _inputs(self):
+    return []
 
   @property
   def output_classes(self):
