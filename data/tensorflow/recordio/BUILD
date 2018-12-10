@@ -17,19 +17,10 @@ cc_library(
 
 # https://docs.bazel.build/versions/master/be/c-cpp.html#cc_library
 cc_library(
-    name = "index",
-    srcs = ["recordio_index.cc"],
-    hdrs = ["recordio_index.h"],
-    deps = [":chunk"],
-)
-
-# https://docs.bazel.build/versions/master/be/c-cpp.html#cc_library
-cc_library(
     name = "reader",
     srcs = ["recordio_reader.cc"],
     hdrs = ["recordio_reader.h"],
     deps = [
         ":chunk_parser",
-        ":index",
     ],
 )

@@ -9,11 +9,11 @@ namespace io {
 
 class Chunk {
   public:
-    Chunk(const std::vector<std::string>& records)
+    Chunk(std::vector<std::string>&& records)
         : cur_record_idx_(0),
           records_(records) {}
     
-    virtual ~Chunk() = default;
+    ~Chunk() = default;
 
     // Return the next record in the current chunk.
     Status Next(string* record);

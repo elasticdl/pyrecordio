@@ -4,7 +4,7 @@ build --copt  -I/usr/local/include/tensorflow/include --copt -D_GLIBCXX_USE_CXX1
 # Turn on warning as errors, and turn on extra error checking 
 build --copt -Werror --copt -Wextra
 # Turn off some errors as they come from included headers.
-build --copt -Wno-unused-parameter
+build --copt -Wno-unused-parameter --copt -Wno-reorder --copt -Wno-sign-compare
 
 build --linkopt -L/usr/local/lib/python3.5/dist-packages/tensorflow --linkopt -ltensorflow_framework --linkopt "-Wl,--rpath=/usr/local/lib/python3.5/dist-packages/tensorflow"
 build -c opt

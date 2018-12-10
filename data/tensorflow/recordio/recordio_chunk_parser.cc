@@ -6,9 +6,9 @@
 
 namespace tensorflow {
 namespace io {
-
-Status ChunkParser::ReadNBytes(InputStreamInterface* input_stream,
-                         uint64 offset,
+namespace {
+Status ReadNBytes(InputStreamInterface* input_stream,
+                         size_t offset,
                          size_t n,
                          string* result) {
   TF_RETURN_IF_ERROR(input_stream->ReadNBytes(n, result));
@@ -24,25 +24,42 @@ Status ChunkParser::ReadNBytes(InputStreamInterface* input_stream,
   return Status::OK();
 }
 
+Status GzipDecompress(const string* src_str, string* dst_str) {
+  // TODO
+  return errors::Unimplemented("");
+}
+
+Status ZlibDecompress(const string* src, string* dst) {
+  // TODO
+  return errors::Unimplemented("");
+}
+
+Status SnappyDecompress(const string* src, string* dst) {
+  snappy::Uncompress(src->data(), src->size(), dst);
+  return Status::OK();
+}
+
+}
+
 Status ChunkParser::Parse(InputStreamInterface* input_stream,
-                    uint64* offset,
-                    std::vector<std::string>& records) {
+                    size_t* offset,
+                    std::vector<std::string>* records) {
+  const uint32 kHeaderSize = sizeof(uint32) * 5;
+
   // Reset file offset for chunk processing.
   input_stream->Reset();
   input_stream->SkipNBytes(*offset);
 
   // Read chunk header from `input_stream`.
   string chunk_header;
-  TF_RETURN_IF_ERROR(ReadNBytes(input_stream, *offset, kHeaderSize_, &chunk_header));
+  TF_RETURN_IF_ERROR(ReadNBytes(input_stream, *offset, kHeaderSize, &chunk_header));
 
   const char *hdr_data= chunk_header.data();
-  const uint32 num_records_ = core::DecodeFixed32(hdr_data + sizeof(uint32));
+  const uint32 num_records = core::DecodeFixed32(hdr_data + sizeof(uint32));
   const uint32 checksum = core::DecodeFixed32(hdr_data + sizeof(uint32) * 2);
-  compression_type_ = CompressionType(
-      core::DecodeFixed32(hdr_data + sizeof(uint32) * 3));
   const uint32 compress_size = core::DecodeFixed32(hdr_data + sizeof(uint32) * 4);
 
-  *offset += kHeaderSize_;
+  *offset += kHeaderSize;
 
   // Read chunk Data.
   string chunk_data;
@@ -57,7 +74,8 @@ Status ChunkParser::Parse(InputStreamInterface* input_stream,
   }
 
   // Decompress chunk data using specified algorithm.
-  switch (core::DecodeFixed32(hdr_data + sizeof(uint32) * 3)) {
+  int compression = core::DecodeFixed32(hdr_data + sizeof(uint32) * 3);
+  switch (compression) {
     case SNAPPY: {
       SnappyDecompress(&chunk_data, &decompressed_data);
       data = decompressed_data.data();
@@ -73,35 +91,25 @@ Status ChunkParser::Parse(InputStreamInterface* input_stream,
       data = decompressed_data.data();
       break;
     }
-    default: {
+    case NONE: {
       data = chunk_data.data();
+      break;
     }
+    default:
+      return errors::Unimplemented(
+        strings::StrCat("Unimplemented compression: ", compression));
   }
 
   // Parse the decompressed chunk data.
   uint32 record_offset = 0;
-  for (int i = 0; i < num_records_; ++i) {
+  records->clear();
+  for (uint32 i = 0; i < num_records; ++i) {
     const uint32 record_len =  core::DecodeFixed32(data + record_offset);
     record_offset += sizeof(uint32);
     const string &record = decompressed_data.substr(record_offset, record_len);
-    records.emplace_back(record);
+    records->emplace_back(record);
     record_offset += record_len;
   }
-  return Status::OK();
-}
-
-Status ChunkParser::GzipDecompress(const string* src_str, const string* dst_str) {
-  // TODO
-  return errors::Unimplemented("");
-}
-
-Status ChunkParser::ZlibDecompress(const string* src, const string* dst) {
-  // TODO
-  return errors::Unimplemented("");
-}
-
-Status ChunkParser::SnappyDecompress(const string* src, string* dst) {
-  snappy::Uncompress(src->data(), src->size(), dst);
   return Status::OK();
 }
 
