@@ -64,7 +64,6 @@ Status ChunkParser::Parse(InputStreamInterface* input_stream,
   // Read chunk Data.
   string chunk_data;
   string decompressed_data;
-  const char* data = nullptr;
   TF_RETURN_IF_ERROR(ReadNBytes(input_stream, *offset, compress_size, &chunk_data));
   *offset += compress_size;
 
@@ -74,33 +73,35 @@ Status ChunkParser::Parse(InputStreamInterface* input_stream,
   }
 
   // Decompress chunk data using specified algorithm.
+  Status status;
   int compression = core::DecodeFixed32(hdr_data + sizeof(uint32) * 3);
   switch (compression) {
     case SNAPPY: {
-      SnappyDecompress(&chunk_data, &decompressed_data);
-      data = decompressed_data.data();
+      status = SnappyDecompress(&chunk_data, &decompressed_data);
       break;
     }
     case GZIP: {
-      GzipDecompress(&chunk_data, &decompressed_data);
-      data = decompressed_data.data();
+      status = GzipDecompress(&chunk_data, &decompressed_data);
       break;
     }
     case ZLIB: {
-      ZlibDecompress(&chunk_data, &decompressed_data);
-      data = decompressed_data.data();
+      status = ZlibDecompress(&chunk_data, &decompressed_data);
       break;
     }
     case NONE: {
-      data = chunk_data.data();
+      chunk_data.swap(decompressed_data);
       break;
     }
     default:
-      return errors::Unimplemented(
+      status = errors::Unimplemented(
         strings::StrCat("Unimplemented compression: ", compression));
+  }
+  if (!status.ok()) {
+    return status;
   }
 
   // Parse the decompressed chunk data.
+  const char* data = decompressed_data.data();
   uint32 record_offset = 0;
   records->clear();
   for (uint32 i = 0; i < num_records; ++i) {
