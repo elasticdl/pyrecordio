@@ -21,26 +21,9 @@ class RecordIOReader {
   // Returns OK on success.
   Status ReadRecord(string* record);
 
-  // Returns the current offset of the specified chunk.
-  uint64 TellOffset() { return offset_; }
-
-  // Reset the logic offset of recordio. 
-  // Trying to seek backward will throw error.
-  Status SeekOffset(uint64 offset) {
-    if (offset < offset_)
-      return errors::InvalidArgument(
-          "Trying to seek offset: ", offset,
-          " which is less than the current offset: ", offset_);
-    offset_ = offset;
-    return Status::OK();
-  }
-
  private:
   // Input stream for recordio file.
   std::unique_ptr<InputStreamInterface> input_stream_;
-
-  // Current read offset of the specified chunk.
-  size_t offset_;
 
   Status init_status_;
 

@@ -6,11 +6,10 @@ namespace io {
 
 RecordIOReader::RecordIOReader(RandomAccessFile* file,
                                size_t offset)
-    : input_stream_(new RandomAccessInputStream(file)),
-      offset_(offset) {
+    : input_stream_(new RandomAccessInputStream(file)) {
   // Parse the chunk. 
   std::vector<std::string> records;
-  init_status_ = parser_.Parse(input_stream_.get(), &offset_, &records);
+  init_status_ = parser_.Parse(input_stream_.get(), &offset, &records);
   if (init_status_.ok()) {
     chunk_.reset(new Chunk(std::move(records)));
   }

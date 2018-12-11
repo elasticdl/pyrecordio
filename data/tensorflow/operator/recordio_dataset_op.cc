@@ -117,12 +117,6 @@ class RecordIODatasetOp : public DatasetOpKernel {
 
      protected:
       Status SaveInternal(IteratorStateWriter* writer) override {
-        mutex_lock l(mu_);
-
-        if (reader_) {
-          TF_RETURN_IF_ERROR(
-              writer->WriteScalar(full_name("offset"), reader_->TellOffset()));
-        }
         return Status::OK();
       }
 
@@ -130,12 +124,7 @@ class RecordIODatasetOp : public DatasetOpKernel {
                              IteratorStateReader* reader) override {
         mutex_lock l(mu_);
         ResetStreamsLocked();
-        if (reader->Contains(full_name("offset"))) {
-          int64 offset;
-          TF_RETURN_IF_ERROR(reader->ReadScalar(full_name("offset"), &offset));
-          TF_RETURN_IF_ERROR(SetupStreamsLocked(ctx->env()));
-          TF_RETURN_IF_ERROR(reader_->SeekOffset(offset));
-        }
+        TF_RETURN_IF_ERROR(SetupStreamsLocked(ctx->env()));
         return Status::OK();
       }
 
