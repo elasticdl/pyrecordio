@@ -3,7 +3,6 @@
 
 #include "recordio_chunk.h"
 #include "recordio_chunk_parser.h"
-#include "recordio_index.h"
 
 namespace tensorflow {
 
@@ -16,7 +15,7 @@ class RecordIOReader {
   RecordIOReader(RandomAccessFile* file,
                  size_t offset);
 
-  virtual ~RecordIOReader() = default;
+  ~RecordIOReader() = default;
 
   // Reads the next record in the recordio file into *record. 
   // Returns OK on success.
@@ -41,7 +40,9 @@ class RecordIOReader {
   std::unique_ptr<InputStreamInterface> input_stream_;
 
   // Current read offset of the specified chunk.
-  uint64 offset_;
+  size_t offset_;
+
+  Status init_status_;
 
   // Current processing chunk.
   std::unique_ptr<Chunk> chunk_; 
