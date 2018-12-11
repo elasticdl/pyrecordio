@@ -103,12 +103,11 @@ Status ChunkParser::Parse(InputStreamInterface* input_stream,
   // Parse the decompressed chunk data.
   const char* data = decompressed_data.data();
   uint32 record_offset = 0;
-  records->clear();
+  records->resize(num_records);
   for (uint32 i = 0; i < num_records; ++i) {
     const uint32 record_len =  core::DecodeFixed32(data + record_offset);
     record_offset += sizeof(uint32);
-    const string &record = decompressed_data.substr(record_offset, record_len);
-    records->emplace_back(record);
+    decompressed_data.substr(record_offset, record_len).swap((*records)[i]);
     record_offset += record_len;
   }
   return Status::OK();
