@@ -123,9 +123,7 @@ class RecordIODatasetOp : public DatasetOpKernel {
       Status RestoreInternal(IteratorContext* ctx,
                              IteratorStateReader* reader) override {
         mutex_lock l(mu_);
-        ResetStreamsLocked();
-        TF_RETURN_IF_ERROR(SetupStreamsLocked(ctx->env()));
-        return Status::OK();
+        return SetupStreamsLocked(ctx->env());
       }
 
      private:
