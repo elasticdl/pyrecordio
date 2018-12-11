@@ -35,10 +35,12 @@ Status ZlibDecompress(const string* src, string* dst) {
 }
 
 Status SnappyDecompress(const string* src, string* dst) {
-  snappy::Uncompress(src->data(), src->size(), dst);
-  return Status::OK();
+  if (snappy::Uncompress(src->data(), src->size(), dst)) {
+    return Status::OK();
+  } else {
+    return errors::DataLoss("Snappy decompress error");
+  }
 }
-
 }
 
 Status ChunkParser::Parse(InputStreamInterface* input_stream,
@@ -93,8 +95,7 @@ Status ChunkParser::Parse(InputStreamInterface* input_stream,
       break;
     }
     default:
-      status = errors::Unimplemented(
-        strings::StrCat("Unimplemented compression: ", compression));
+      status = errors::Unimplemented("Unimplemented compression: ", compression);
   }
   if (!status.ok()) {
     return status;
