@@ -1,1 +1,0 @@
-include bazel-bin/data/tensorflow/operator/librecordio_dataset_op.so 

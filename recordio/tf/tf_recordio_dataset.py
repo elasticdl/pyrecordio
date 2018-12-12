@@ -6,7 +6,7 @@ from tensorflow.python.framework import tensor_shape
 try:
   recordio = tf.load_op_library('data/tensorflow/operator/librecordio_dataset_op.so')
 except:
-  recordio = tf.load_op_library('bazel-bin/data/tensorflow/operator/librecordio_dataset_op.so')
+  recordio = tf.load_op_library('recordio/librecordio_dataset_op.so')
 
 class RecordIODataset(tf.data.Dataset):
   """A `Dataset` comprising records from one or more RecordIO files."""
