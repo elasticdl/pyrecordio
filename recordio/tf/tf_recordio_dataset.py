@@ -3,7 +3,10 @@ from tensorflow.python.framework import ops
 from tensorflow.python.framework import dtypes
 from tensorflow.python.framework import tensor_shape
 
-recordio = tf.load_op_library('librecordio_dataset_op.so')
+try:
+  recordio = tf.load_op_library('../../data/tensorflow/operator/librecordio_dataset_op.so')
+except:
+  recordio = tf.load_op_library('librecordio_dataset_op.so')
 
 class RecordIODataset(tf.data.Dataset):
   """A `Dataset` comprising records from one or more RecordIO files."""
