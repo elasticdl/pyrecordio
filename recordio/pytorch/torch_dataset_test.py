@@ -1,6 +1,6 @@
 import unittest
 import tempfile
-from data import TorchDataset 
+from torch_dataset import TorchDataset 
 from recordio import FileIndex 
 from recordio import File
 
@@ -8,7 +8,7 @@ from recordio import File
 class TestTorchDataset(unittest.TestCase):
     """ Test torch_dataset.py
     """
-   
+
     def test_dataset(self):
         data_source = [
             b'china',
