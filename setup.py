@@ -18,4 +18,5 @@ setup(name='recordio',
       author_email='XXX@antfin.com',
       license='TBD',
       packages=packages,
+      include_package_data=True,
       install_requires=install_requires)
