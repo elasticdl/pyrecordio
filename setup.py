@@ -6,8 +6,6 @@
 
 from setuptools import setup, find_packages
 
-packages = find_packages(where='.', exclude=['*.pyc'])
-
 install_requires=['crc32c']
 
 setup(name='recordio',
@@ -17,7 +15,6 @@ setup(name='recordio',
       author='Ant',
       author_email='XXX@antfin.com',
       license='TBD',
-      packages=packages,
+      packages=find_packages(),
       include_package_data=True,
-      data_files=[('/recordio', ["bazel-bin/recordio/tensorflow_op/cc/librecordio_dataset_op.so"])],
       install_requires=install_requires)

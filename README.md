@@ -63,3 +63,11 @@ while iterator.has_next():
     record = iterator.next()
 rdio_r.close()
 ```
+
+## Packageing
+The package process largely follows the example of [Tensorflow custom op](https://github.com/tensorflow/custom-op)
+
+```bash
+bazel build build_pip_package
+bazel-bin/build_pip_pkg artifacts
+```
