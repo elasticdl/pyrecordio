@@ -10,7 +10,7 @@ py_test(
         ":tf_recordio_dataset",
     ],
     data = [
-        "//data/tensorflow/operator:librecordio_dataset_op.so",
+        "//tensorflow_recordio/cc:librecordio_dataset_op.so",
         "test_data/test_data_with_snappy_compression",
     ],
 )

@@ -24,3 +24,12 @@ cc_library(
         ":chunk_parser",
     ],
 )
+
+# https://docs.bazel.build/versions/master/be/c-cpp.html#cc_library
+cc_binary(
+    name = "librecordio_dataset_op.so",
+    linkshared = 1,
+    srcs = ["recordio_dataset_op.cc"],
+    deps = [":reader"],
+    visibility = ["//visibility:public"]
+)

@@ -1,3 +1,1 @@
-from .tf_recordio_dataset import RecordIODataset 
-
-__all__ = ['RecordIODataset']
+from tensorflow_recordio.python.tf_recordio_dataset import RecordIODataset

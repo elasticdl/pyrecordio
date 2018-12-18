@@ -5,7 +5,7 @@ try:
 except:
   from tf_recordio_dataset import RecordIODataset 
 
-filename = 'tensorflow_recordio/test_data/test_data_with_snappy_compression'
+filename = 'tensorflow_recordio/python/test_data/test_data_with_snappy_compression'
 
 class TestRecordioDataset(unittest.TestCase):
     """ Test tf_recordio_dataset_test.py

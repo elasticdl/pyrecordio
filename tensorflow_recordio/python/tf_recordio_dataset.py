@@ -7,7 +7,7 @@ import site
 install_dir = site.getsitepackages()[0] 
 
 try:
-  recordio = tf.load_op_library('data/tensorflow/operator/librecordio_dataset_op.so')
+  recordio = tf.load_op_library('tensorflow_recordio/cc/librecordio_dataset_op.so')
 except:
   recordio = tf.load_op_library(install_dir + '/recordio/librecordio_dataset_op.so')
 
