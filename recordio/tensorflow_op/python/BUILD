@@ -1,5 +1,7 @@
+package(default_visibility = ["//visibility:public"])
+
 py_library(
-    name = "tf_recordio_dataset",
+    name = "lib",
     srcs = ["tf_recordio_dataset.py"],
 )
 
@@ -7,7 +9,7 @@ py_test(
     name = "tf_recordio_dataset_test",
     srcs = ["tf_recordio_dataset_test.py"],
     deps = [
-        ":tf_recordio_dataset",
+        ":lib",
     ],
     data = [
         "//recordio/tensorflow_op/cc:librecordio_dataset_op.so",

@@ -1,4 +1,4 @@
-package(default_visibility = ["//visibility:public"])
+package(default_visibility = ["//recordio:__subpackages__"])
 
 py_library(
     name = "lib",

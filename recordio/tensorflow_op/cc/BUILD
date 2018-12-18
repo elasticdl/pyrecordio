@@ -1,4 +1,4 @@
-package(default_visibility = ["//data:__subpackages__"])
+package(default_visibility = ["//recordio:__subpackages__"])
 
 # https://docs.bazel.build/versions/master/be/c-cpp.html#cc_library
 cc_library(
