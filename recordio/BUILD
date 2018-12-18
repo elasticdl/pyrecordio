@@ -6,6 +6,6 @@ py_library(
     deps = [
         "//recordio/recordio:lib",
         "//recordio/torch_dataset:lib",
-        "//recordio/tensorflow_op/python:lib",
+        "//recordio/tensorflow_op:lib",
     ]
 )
