@@ -1,3 +1,3 @@
-from .torch_dataset import TorchDataset 
+from recordio.torch_dataset.torch_dataset import TorchDataset 
 
 __all__ = ['TorchDataset']

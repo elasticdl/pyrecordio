@@ -1,1 +1,1 @@
-from tensorflow_recordio.python.tf_recordio_dataset import RecordIODataset
+from recordio.tensorflow_op.python.tf_recordio_dataset import RecordIODataset

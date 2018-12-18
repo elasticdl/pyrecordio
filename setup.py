@@ -19,5 +19,5 @@ setup(name='recordio',
       license='TBD',
       packages=packages,
       include_package_data=True,
-      data_files=[('/recordio', ["bazel-bin/data/tensorflow/operator/librecordio_dataset_op.so"])],
+      data_files=[('/recordio', ["bazel-bin/recordio/tensorflow_op/cc/librecordio_dataset_op.so"])],
       install_requires=install_requires)
