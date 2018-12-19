@@ -1,6 +1,7 @@
 from recordio.recordio.file_index import FileIndex
 from recordio.recordio.writer import Writer
 from recordio.recordio.reader import Reader
+from recordio.recordio.header import Compressor
 
 
 class File(object):
