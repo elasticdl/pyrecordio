@@ -7,7 +7,7 @@ class Writer(object):
     """ Util class for user to transfer raw data into recordio chunk format.
     """
 
-    def __init__(self, out_file, max_chunk_size, compressor=Compressor(3)):
+    def __init__(self, out_file, max_chunk_size, compressor=Compressor(2)):
         # Destination file for the chunk data.
         self._out_file = out_file
         # Max compressed data size per chunk

@@ -26,12 +26,12 @@ Status ReadNBytes(InputStreamInterface* input_stream,
 
 Status GzipDecompress(const string* src_str, string* dst_str) {
   // TODO
-  return errors::Unimplemented("");
+  return errors::Unimplemented("gzip decompression not support for now.");
 }
 
 Status ZlibDecompress(const string* src, string* dst) {
   // TODO
-  return errors::Unimplemented("");
+  return errors::Unimplemented("zlib decompression not support for now.");
 }
 
 Status SnappyDecompress(const string* src, string* dst) {
