@@ -1,0 +1,1 @@
+from recordio.tensorflow_op.python.tf_recordio_dataset import RecordIODataset

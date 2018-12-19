@@ -1,4 +1,4 @@
-from recordio import Chunk
+from recordio.recordio.chunk import Chunk
 
 
 class Reader(object):

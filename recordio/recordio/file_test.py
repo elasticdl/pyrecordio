@@ -1,6 +1,6 @@
 import unittest
 import tempfile
-from recordio import File
+from recordio.recordio.file import File
 
 
 class TestRecordIOFile(unittest.TestCase):

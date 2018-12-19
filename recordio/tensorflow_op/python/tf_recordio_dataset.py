@@ -1,15 +1,28 @@
 import tensorflow as tf
 from tensorflow.python.framework import ops
 from tensorflow.python.framework import dtypes
+from tensorflow.python.framework import load_library
 from tensorflow.python.framework import tensor_shape
+from tensorflow.python.platform import resource_loader
+import os.path
 
-import site
-install_dir = site.getsitepackages()[0] 
+# bazel's runfile tree is a mess. https://github.com/bazelbuild/bazel/issues/2339
+# Here we do some hack to find the dynamic library in different cases. Use the 
+# one we found last.
+__lib_paths = [
+  # If the pip library is installed
+  resource_loader.get_path_to_datafile('librecordio_dataset_op.so'),
+  # For bazel_test in this WORKSPACE
+  'recordio/tensorflow_op/python/librecordio_dataset_op.so',
+]
 
-try:
-  recordio = tf.load_op_library('data/tensorflow/operator/librecordio_dataset_op.so')
-except:
-  recordio = tf.load_op_library(install_dir + '/recordio/librecordio_dataset_op.so')
+__fp = None
+for fp in __lib_paths:
+  found = os.path.isfile(fp)
+  print(fp, "FOUND" if found else "NOT FOUND")
+  if found: __fp = fp
+
+recordio = load_library.load_op_library(__fp)
 
 class RecordIODataset(tf.data.Dataset):
   """A `Dataset` comprising records from one or more RecordIO files."""

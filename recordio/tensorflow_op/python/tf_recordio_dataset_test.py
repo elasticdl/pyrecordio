@@ -1,17 +1,14 @@
 import unittest
 import tensorflow as tf
-try:
-  from recordio.tf import RecordIODataset
-except:
-  from tf_recordio_dataset import RecordIODataset 
+from tf_recordio_dataset import RecordIODataset 
 
+filename = 'recordio/tensorflow_op/python/test_data/test_data_with_snappy_compression'
 
 class TestRecordioDataset(unittest.TestCase):
     """ Test tf_recordio_dataset_test.py
     """
 
     def test_read_dataset_first_chunk(self):
-        filename = 'recordio/tf/test_data/test_data_with_snappy_compression'
         expected_data = [
             b'china',
             b'usa',
@@ -47,7 +44,6 @@ class TestRecordioDataset(unittest.TestCase):
         self.assertEqual(list(expected_data[0:3]), list(chunk_data))
 
     def test_read_dataset_second_chunk(self):
-        filename = 'recordio/tf/test_data/test_data_with_snappy_compression'
         expected_data = [
             b'china',
             b'usa',
@@ -82,7 +78,6 @@ class TestRecordioDataset(unittest.TestCase):
         self.assertEqual(list(expected_data[3:5]), list(chunk_data))
  
     def test_read_dataset_last_chunk(self):
-        filename = 'recordio/tf/test_data/test_data_with_snappy_compression'
         expected_data = [
             b'china',
             b'usa',

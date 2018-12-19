@@ -1,5 +1,5 @@
-from recordio.global_variables import header_size
-from recordio import Header
+from recordio.recordio.global_variables import header_size
+from recordio.recordio.header import Header
 import os
 
 # TODO: use @dataclass

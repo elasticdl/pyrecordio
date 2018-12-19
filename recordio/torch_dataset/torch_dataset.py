@@ -1,5 +1,5 @@
 from torch.utils.data import Dataset
-import recordio
+from recordio.recordio.file import File
 
 
 class TorchDataset(Dataset):
@@ -8,7 +8,7 @@ class TorchDataset(Dataset):
 
     def __init__(self, recordfile_path):
         # Create recordio file
-        self._rdio = recordio.File(recordfile_path, 'r')
+        self._rdio = File(recordfile_path, 'r')
 
     def __enter__(self):
         """ For `with` statement

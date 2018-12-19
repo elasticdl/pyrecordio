@@ -63,3 +63,17 @@ while iterator.has_next():
     record = iterator.next()
 rdio_r.close()
 ```
+
+## Packageing
+The package process largely follows the example of [Tensorflow custom op](https://github.com/tensorflow/custom-op)
+
+```bash
+bazel build build_pip_package
+bazel-bin/build_pip_pkg artifacts
+```
+
+After building the package, force install it your local library to replace the previous one.
+```bash
+pip install --user -I artifacts/recordio-<version>.whl
+```
+There is also a prepackded version checked into the repo for convenience.

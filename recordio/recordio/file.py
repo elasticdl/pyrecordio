@@ -1,6 +1,6 @@
-from recordio import FileIndex
-from recordio import Writer
-from recordio import Reader
+from recordio.recordio.file_index import FileIndex
+from recordio.recordio.writer import Writer
+from recordio.recordio.reader import Reader
 
 
 class File(object):

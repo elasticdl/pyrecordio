@@ -1,8 +1,8 @@
 import unittest
 import tempfile
-from recordio import Compressor
-from recordio import Writer
-from recordio import Reader
+from recordio.recordio.header import Compressor
+from recordio.recordio.writer import Writer
+from recordio.recordio.reader import Reader
 
 
 class TestHeader(unittest.TestCase):

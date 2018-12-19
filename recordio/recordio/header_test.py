@@ -1,6 +1,6 @@
 import unittest
 import tempfile
-from recordio import Header, Compressor
+from recordio.recordio.header import Header, Compressor
 
 
 class TestHeader(unittest.TestCase):

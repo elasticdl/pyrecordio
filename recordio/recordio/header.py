@@ -1,5 +1,5 @@
 from enum import Enum
-from recordio.global_variables import int_word_len, endian
+from recordio.recordio.global_variables import int_word_len, endian
 import os
 
 

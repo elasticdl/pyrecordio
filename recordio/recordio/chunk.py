@@ -2,8 +2,8 @@ import gzip
 import os
 from crc32c import crc32
 import snappy
-from recordio import Header, Compressor
-from recordio.global_variables import int_word_len, endian
+from recordio.recordio.header import Header, Compressor
+from recordio.recordio.global_variables import int_word_len, endian
 
 
 class Chunk(object):
