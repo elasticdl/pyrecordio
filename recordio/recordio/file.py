@@ -1,13 +1,14 @@
 from recordio.recordio.file_index import FileIndex
 from recordio.recordio.writer import Writer
 from recordio.recordio.reader import Reader
+from recordio.recordio.header import Compressor
 
 
 class File(object):
     """ Simple Wrapper for FileIndex, Writer and Reader for usability.
     """
 
-    def __init__(self, file_path, mode, *, max_chunk_size=1024):
+    def __init__(self, file_path, mode, *, max_chunk_size=1024, compressor=Compressor.snappy):
         """ Initialize according open mode
 
         Raises:
