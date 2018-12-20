@@ -8,7 +8,7 @@ class File(object):
     """ Simple Wrapper for FileIndex, Writer and Reader for usability.
     """
 
-    def __init__(self, file_path, mode, *, max_chunk_size=1024, compressor=Compressor(2)):
+    def __init__(self, file_path, mode, *, max_chunk_size=1024, compressor=Compressor.snappy):
         """ Initialize according open mode
 
         Raises:
