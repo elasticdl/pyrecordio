@@ -68,7 +68,7 @@ rdio_r.close()
 The package process largely follows the example of [Tensorflow custom op](https://github.com/tensorflow/custom-op)
 
 ```bash
-bazel build build_pip_package
+bazel build build_pip_pkg 
 bazel-bin/build_pip_pkg artifacts
 ```
 
