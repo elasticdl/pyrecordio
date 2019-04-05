@@ -67,13 +67,33 @@ rdio_r.close()
 ## Packageing
 The package process largely follows the example of [Tensorflow custom op](https://github.com/tensorflow/custom-op)
 
+First build RecordIO devel docker image:
+```bash
+docker build -t recordio:dev -f Dockerfile .
+```
+
+Start docker and mapping the `git` and bazel `.cache` directories into the container:
+```bash
+docker run --rm -it \
+    -v $HOME/git:/git \
+    -v $HOME/.cache:/.cache \
+    -w /git/pyrecordio \
+    recordio:dev
+```
+Inside container, build the pip package:
 ```bash
 bazel build build_pip_pkg 
 bazel-bin/build_pip_pkg artifacts
 ```
 
-After building the package, force install it your local library to replace the previous one.
+After building the package, force install it to replace the existing version.
 ```bash
-pip install --user -I artifacts/recordio-<version>.whl
+pip install -I artifacts/recordio-<version>.whl
 ```
+
+To test the installed TensorFlow RecordIO Dataset op:
+```bash
+python recordio/tensorflow_op/python/tf_recordio_dataset_test.py
+```
+
 There is also a prepackded version checked into the repo for convenience.
