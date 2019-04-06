@@ -6,7 +6,7 @@
 
 from setuptools import setup, find_packages
 
-install_requires=['crc32c']
+install_requires=['crc32c', 'python-snappy']
 
 setup(name='recordio',
       version='0.0.1',

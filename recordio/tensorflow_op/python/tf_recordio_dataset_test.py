@@ -1,6 +1,6 @@
 import unittest
 import tensorflow as tf
-from tf_recordio_dataset import RecordIODataset 
+from recordio.tensorflow_op.python.tf_recordio_dataset import RecordIODataset 
 
 filename = 'recordio/tensorflow_op/python/test_data/test_data_with_snappy_compression'
 

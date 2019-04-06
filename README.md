@@ -4,11 +4,11 @@ RecordIO is a file format created for [PaddlePaddle Elastic Deep Learning](https
 
 ## Motivations
 
-In distributed computing, we often need to dispatch tasks to worker processes.  Usually, a task is defined as a parition of the input data, like what MapReduce and distributed machine learning do.
+In distributed computing, we often need to dispatch tasks to worker processes.  Usually, a task is defined as a partition of the input data, like what MapReduce and distributed machine learning do.
 
-Most distributed filesystems, including HDFS, Google FS, and CephFS, prefer a small number of big files.  Therefore, it is impratical to create each task as a small file; instead, we need a format for big files that is
+Most distributed filesystems, including HDFS, Google FS, and CephFS, prefer a small number of big files.  Therefore, it is impractical to create each task as a small file; instead, we need a format for big files that is
 
-1. appenable, so that applications can append records to the file without updating the meta-data, thus fault tolerable,
+1. appendable, so that applications can append records to the file without updating the meta-data, thus fault tolerable,
 2. partitionable, so that applications can quickly scan over the file to count the total number of records, and create tasks each corresponds to a sequence of records.
 
 RecordIO is such a file format.
@@ -64,16 +64,38 @@ while iterator.has_next():
 rdio_r.close()
 ```
 
-## Packageing
+## Packaging
+
 The package process largely follows the example of [Tensorflow custom op](https://github.com/tensorflow/custom-op)
 
+First build RecordIO devel Docker image:
+```bash
+docker build -t recordio:dev -f Dockerfile .
+```
+
+Start Docker container and map `git` and bazel `.cache` directories:
+```bash
+docker run --rm -it \
+    -v $HOME/git:/git \
+    -v $HOME/.cache:/.cache \
+    -w /git/pyrecordio \
+    recordio:dev
+```
+
+Inside container, build the pip package:
 ```bash
 bazel build build_pip_pkg 
 bazel-bin/build_pip_pkg artifacts
 ```
 
-After building the package, force install it your local library to replace the previous one.
+After building the package, force install it to replace the existing version.
 ```bash
-pip install --user -I artifacts/recordio-<version>.whl
+pip install -I artifacts/recordio-<version>.whl
 ```
+
+To test the installed TensorFlow RecordIO Dataset op:
+```bash
+python recordio/tensorflow_op/python/tf_recordio_dataset_test.py
+```
+
 There is also a prepackded version checked into the repo for convenience.

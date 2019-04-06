@@ -1,0 +1,10 @@
+build --spawn_strategy=standalone
+build --strategy=Genrule=standalone
+build -c opt
+build --action_env TF_HEADER_DIR="/usr/local/lib/python3.5/dist-packages/tensorflow/include"
+build --action_env TF_SHARED_LIBRARY_DIR="/usr/local/lib/python3.5/dist-packages/tensorflow"
+
+# Turn on warning as errors, and turn on extra error checking 
+build --copt -Werror --copt -Wextra
+# Turn off some errors as they come from included headers.
+build --copt -Wno-unused-parameter --copt -Wno-reorder --copt -Wno-sign-compare
