@@ -23,20 +23,24 @@ class RangeReader(object):
 
     def __next__(self):
         if (
-            self._end >= self._start or
-            self._chunk_idx < 0 or
-            self._idx_in_chunk < 0
+            self._start >= self._end
+            or self._chunk_idx < 0
+            or self._idx_in_chunk < 0
         ):
             raise StopIteration()
 
         if self._chunk is None:
             self._chunk = Chunk()
-            self._chunk.parse(self._file_index.chunk_offset(self._chunk_idx))
+            self._chunk.parse(
+                self._data_file, self._file_index.chunk_offset(self._chunk_idx)
+            )
 
         record = self._chunk.get(self._idx_in_chunk)
         self._start += 1
         self._idx_in_chunk += 1
-        if self._idx_in_chunk >= self._file_index.chunk_len(self._chunk_idx):
+        if self._idx_in_chunk >= self._file_index.chunk_records(
+            self._chunk_idx
+        ):
             self._chunk_idx += 1
             self._chunk = None
             self._idx_in_chunk = 0
@@ -44,3 +48,6 @@ class RangeReader(object):
                 self._chunk_idx = -1
 
         return record
+
+    def __iter__(self):
+        return self
