@@ -1,9 +1,9 @@
 import unittest
 import tempfile
 
-from recordio.recordio.file_index import FileIndex
-from recordio.recordio.writer import Writer
-from recordio.recordio.reader import RangeReader
+from .file_index import FileIndex
+from .writer import Writer
+from .reader import RangeReader
 
 
 class ReaderTest(unittest.TestCase):

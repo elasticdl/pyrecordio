@@ -1,5 +1,5 @@
 from enum import Enum
-from recordio.recordio.global_variables import int_word_len, endian
+from .global_variables import int_word_len, endian
 import os
 
 
@@ -28,7 +28,7 @@ class Header(object):
         """ Flush the header content to the output file.
 
         Arguments:
-          out_file: The destination file.
+            out_file: The destination file.
         """
         out_file.write(self._magic_number.to_bytes(int_word_len, endian))
         out_file.write(self._num_records.to_bytes(int_word_len, endian))
@@ -40,11 +40,11 @@ class Header(object):
         """ Read and parse header content from input file
 
         Arguments:
-          in_file: The source file.
-          offset: The header start offset in the file. 
+            in_file: The source file.
+            offset: The header start offset in the file. 
 
         Raises:
-          ValueError: invalid offset.
+            ValueError: invalid offset.
         """
 
         file_size = os.path.getsize(in_file.name)
@@ -69,7 +69,7 @@ class Header(object):
         """ Return the checksum of the data bytes in the chunk
 
         Returns:
-          the checksum
+            the checksum
         """
         return self._checksum
 
@@ -77,7 +77,7 @@ class Header(object):
         """ Return the compressor of the chunk
 
         Returns:
-          the compressor
+            the compressor
         """
         return self._compressor
 
@@ -85,7 +85,7 @@ class Header(object):
         """ Return the total record count of the chunk
 
         Returns:
-          total record count
+            total record count
         """
         return self._num_records
 
@@ -93,7 +93,7 @@ class Header(object):
         """ Return the total bytes size of the compressed data in the chunk
 
         Returns:
-          total data bytes size
+            total data bytes size
         """
         return self._compress_size
 

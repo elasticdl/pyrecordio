@@ -2,8 +2,8 @@ import gzip
 import os
 from crc32c import crc32
 import snappy
-from recordio.recordio.header import Header, Compressor
-from recordio.recordio.global_variables import int_word_len, endian
+from .header import Header, Compressor
+from .global_variables import int_word_len, endian
 
 
 class Chunk(object):
@@ -20,7 +20,7 @@ class Chunk(object):
         """ Add a new string record value to this chunk
 
         Arguments:
-          record: A python3 byte class representing a record
+            record: A python3 byte class representing a record
         """
         if not isinstance(record, bytes):
             raise ValueError('Expect bytes type, got: ' + type(record))
@@ -32,10 +32,10 @@ class Chunk(object):
         """ Get a record string at the specified index position
 
         Arguments:
-          index: The position of record in the records
+            index: The position of record in the records
 
         Returns:
-          A string value represending the specified record
+            A string value represending the specified record
         """
         return self._records[index]
 
@@ -49,14 +49,14 @@ class Chunk(object):
         """ Write the chunk to the output file.
 
         Arguments:
-          out_file: The output file of recordio format.
-          compressor: The compressor enum.
+            out_file: The output file of recordio format.
+            compressor: The compressor enum.
 
         Returns:
-          True if the write operation execute successfully.
+            True if the write operation execute successfully.
 
         Raises:
-          ValueError: invalid compressor
+            ValueError: invalid compressor
         """
         if not self._records:
             return True
@@ -104,16 +104,16 @@ class Chunk(object):
         """ Read and parse the next chunk from the input file.
 
         Arguments:
-          in_file: The input file contains the original data.
-          offset: The chunk start offset in the file. 
+            in_file: The input file contains the original data.
+            offset: The chunk start offset in the file. 
 
         Returns:
-          True if the parse operation execute successfully.
+            True if the parse operation execute successfully.
 
         Raises:
-          ValueError: invalid offset.
-          RuntimeError: checksum check failed. 
-          ValueError: invalid compressor.
+            ValueError: invalid offset.
+            RuntimeError: checksum check failed. 
+            ValueError: invalid compressor.
         """
         file_size = os.path.getsize(in_file.name)
         if offset < 0 or offset >= (file_size - int_word_len - 1):
@@ -172,7 +172,7 @@ class Chunk(object):
         """ Return current total records in the chunk
 
         Returns:
-          current total records size
+            current total records size
         """
         return len(self._records)
 
@@ -180,6 +180,6 @@ class Chunk(object):
         """ Return current total bytes size in the chunk
 
         Returns:
-          current total bytes size
+            current total bytes size
         """
         return self._num_bytes

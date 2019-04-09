@@ -1,7 +1,7 @@
 import unittest
 import tempfile
-from recordio.recordio.chunk import Chunk
-from recordio.recordio.header import Compressor
+from .chunk import Chunk
+from .header import Compressor
 
 
 class TestHeader(unittest.TestCase):

@@ -1,8 +1,8 @@
 import unittest
 import tempfile
-from recordio.recordio.file_index import FileIndex
-from recordio.recordio.header import Compressor
-from recordio.recordio.writer import Writer
+from .file_index import FileIndex
+from .header import Compressor
+from .writer import Writer
 
 
 class TestFileIndex(unittest.TestCase):
