@@ -1,6 +1,6 @@
 from recordio.recordio.file_index import FileIndex
 from recordio.recordio.writer import Writer
-from recordio.recordio.reader import Reader
+from recordio.recordio.reader import RangeReader
 from recordio.recordio.header import Compressor
 
 
@@ -49,7 +49,7 @@ class File(object):
         # Starts from the first chunk
         self._chunk_index = 0
         # Initialize the first chunk
-        self._reader = Reader(self._data, 0)
+        self._reader = RangeReader(self._data, self._index)
 
         return self
 
@@ -62,16 +62,7 @@ class File(object):
         Raises:
           StopIteration: Reach the end of dataset
         """
-        if not self._reader.has_next() and (
-                self._chunk_index + 1 >= self._index.total_chunks()):
-            raise StopIteration
-
-        # Switch to the next chunk
-        if not self._reader.has_next():
-            self._chunk_index += 1
-            self._reader = Reader(self._data, self._chunk_index)
-
-        return self._reader.next()
+        return next(self._reader)
 
     def write(self, record):
         """ Write a record into recordio file.
@@ -109,10 +100,11 @@ class File(object):
         if self._mode != 'r' and self._mode != 'read':
             raise RuntimeError('Should be under read mode')
 
-        chunk_index, record_index = self._index.locate_record(index)
-        chunk_offset = self._index.chunk_offset(chunk_index)
-        reader = Reader(self._data, chunk_offset)
-        return reader.get(record_index)
+        reader = RangeReader(self._data, self._index, index, index + 1)
+        try:
+          return next(reader)
+        except StopIteration:
+          raise IndexError()
 
     def get_index(self):
         """ Returns the recordio file index

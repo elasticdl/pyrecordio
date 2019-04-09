@@ -1,64 +1,53 @@
 from recordio.recordio.chunk import Chunk
 
 
-class Reader(object):
-    """ Read and parse the chunk of the given input file.
-        a reader only response for processing one chunk in the recordio file.
+class RangeReader(object):
+    """
+    Reader that returns records in a given range.
     """
 
-    def __init__(self, in_file, offset):
-        # The chunk file.
-        self._in_file = in_file
-
-        # Parse the given chunk file.
-        self._chunk = Chunk()
-        # The start offset of the chunk in the recordio file
-        self._chunk.parse(in_file, offset)
-
-        # Total record count in the chunk
-        self._total_count = self._chunk.total_count()
-        # Current record index
-        self._curr_index = 0
-
-    def get(self, index):
-        """ Return the record specified by the index
-
-        Arguments:
-          index: record index in the chunk
-
-        Returns:
-          String record value
+    def __init__(self, in_file, file_index, start=0, end=None):
         """
-        return self._chunk.get(index)
+        in_file: File object of underlying data file.
+        file_index: Index object of the RecordIO file.
+        start, end: start and end record number of the range. By default, start
+            from 0 and end at the last record in the file. Has the same
+            semantics as python list[start:end].
+    """
+        self._data_file = in_file
+        self._file_index = file_index
+        self._start = start
+        self._end = file_index.total_records() if end is None else end
+        self._chunk_idx, self._idx_in_chunk = file_index.locate_record(start)
+        self._chunk = None
 
-    def next(self):
-        """ Return the next chunk of the input file.
+    def __next__(self):
+        if (
+            self._start >= self._end
+            or self._chunk_idx < 0
+            or self._idx_in_chunk < 0
+        ):
+            raise StopIteration()
 
-        Returns:
-          The next string value in the chunk.
+        if self._chunk is None:
+            self._chunk = Chunk()
+            self._chunk.parse(
+                self._data_file, self._file_index.chunk_offset(self._chunk_idx)
+            )
 
-        Raises:
-          RuntimeError: Reach the end of the chunk and no more any records
-        """
-        if self._curr_index < self._total_count:
-            record = self._chunk.get(self._curr_index)
-            self._curr_index += 1
-            return record
-        else:
-            raise RuntimeError("no more any records in the chunk.")
+        record = self._chunk.get(self._idx_in_chunk)
+        self._start += 1
+        self._idx_in_chunk += 1
+        if self._idx_in_chunk >= self._file_index.chunk_records(
+            self._chunk_idx
+        ):
+            self._chunk_idx += 1
+            self._chunk = None
+            self._idx_in_chunk = 0
+            if self._chunk_idx >= self._file_index.total_chunks():
+                self._chunk_idx = -1
 
-    def has_next(self):
-        """ Check if reach the end of the chunk.
+        return record
 
-        Returns:
-          Bool value indicate whether there is next string value in the chunk.
-        """
-        return self._curr_index < self._total_count
-
-    def total_count(self):
-        """ Return the total record count.
-
-        Returns:
-          Total Record count in the current chunk.
-        """
-        return self._total_count
+    def __iter__(self):
+        return self
