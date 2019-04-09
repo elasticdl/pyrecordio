@@ -35,6 +35,5 @@ class Writer(object):
     def flush(self):
         """ flush the remaining records to chunk file.
         """
-        if self._chunk is not None:
-            self._chunk.write(self._out_file, self._compressor)
-            self._chunk = Chunk()
+        self._chunk.write(self._out_file, self._compressor)
+        self._chunk = Chunk()
