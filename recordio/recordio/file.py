@@ -1,7 +1,7 @@
-from recordio.recordio.file_index import FileIndex
-from recordio.recordio.writer import Writer
-from recordio.recordio.reader import RangeReader
-from recordio.recordio.header import Compressor
+from .file_index import FileIndex
+from .writer import Writer
+from .reader import RangeReader
+from .header import Compressor
 
 
 class File(object):
@@ -12,7 +12,7 @@ class File(object):
         """ Initialize according open mode
 
         Raises:
-          ValueError: invalid open mode input param.
+            ValueError: invalid open mode input param.
         """
         if mode == 'r' or mode == 'read':
             self._mode = 'r'
@@ -39,7 +39,7 @@ class File(object):
         """ For iterate operation
 
         Returns:
-          Iterator of dataset
+            Iterator of dataset
         """
         return self.get_reader()
 
@@ -55,10 +55,10 @@ class File(object):
         """ Write a record into recordio file.
 
         Arguments:
-          record: Record value String.
+            record: Record value String.
 
         Raises:
-          RuntimeError: wrong open mode.
+            RuntimeError: wrong open mode.
         """
         if self._mode != 'w':
             raise RuntimeError('Should be under write mode')
@@ -76,31 +76,31 @@ class File(object):
         """ Get the record string value specified by index
 
         Arguments:
-          index: record index in the recordio file
+            index: record index in the recordio file
 
         Returns:
-          Record string value
+            Record string value
 
         Raises:
-          RuntimeError: wrong open mode.
+            RuntimeError: wrong open mode.
         """
         if self._mode != 'r':
             raise RuntimeError('Should be under read mode')
 
         reader = self.get_reader(index, index + 1)
         try:
-          return next(reader)
+            return next(reader)
         except StopIteration:
-          raise IndexError()
+            raise IndexError()
 
     def count(self):
         """ Return total record count of the recordio file
 
         Returns:
-          Total record count
+            Total record count
 
         Raises:
-          RuntimeError: wrong open mode.
+            RuntimeError: wrong open mode.
         """
         if self._mode != 'r':
             raise RuntimeError('Should be under read mode')

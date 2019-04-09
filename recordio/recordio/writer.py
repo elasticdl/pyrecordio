@@ -1,6 +1,6 @@
-from recordio.recordio.header import Compressor
-from recordio.recordio.chunk import Chunk
-from recordio.recordio.global_variables import code_type
+from .header import Compressor
+from .chunk import Chunk
+from .global_variables import code_type
 
 
 class Writer(object):
@@ -21,10 +21,10 @@ class Writer(object):
         """ Add a new record to the chunk.
 
         Arguments:
-          record: bytes array representing a new record.
+            record: bytes array representing a new record.
 
         Returns:
-          True if write operation execute successfully.
+            True if write operation execute successfully.
         """
         if self._chunk.num_bytes() + len(record) > self._max_chunk_size:
             self._chunk.write(self._out_file, self._compressor)

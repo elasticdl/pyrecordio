@@ -1,4 +1,4 @@
-from recordio.recordio.chunk import Chunk
+from .chunk import Chunk
 
 
 class RangeReader(object):

@@ -1,6 +1,6 @@
 import unittest
 import tempfile
-from recordio.recordio.file import File
+from .file import File
 
 data_source = [
     b'china',

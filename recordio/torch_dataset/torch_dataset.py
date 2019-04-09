@@ -1,5 +1,5 @@
 from torch.utils.data import Dataset
-from recordio.recordio.file import File
+from recordio import File
 
 
 class TorchDataset(Dataset):
@@ -23,24 +23,24 @@ class TorchDataset(Dataset):
     def __getitem__(self, index):
         """ Retrieve record data by index
         Arguments:
-          index: record index in the recordio file
+            index: record index in the recordio file
 
         Returns:
-          Record value specified by index
+            Record value specified by index
 
         Raises:
-          IndexError: Reach the end of dataset
+            IndexError: Reach the end of dataset
         """
         if index >= self._rdio.count():
             raise IndexError()
- 
+
         return self._rdio.get(index)
 
     def __len__(self):
         """ Returns total record count in the recordio file
 
         Returns:
-          total record count
+            total record count
         """
         return self._rdio.count()
 
