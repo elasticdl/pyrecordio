@@ -40,9 +40,6 @@ class File(object):
 
         Returns:
           Iterator of dataset
-
-        Raises:
-          RuntimeError: wrong open mode.
         """
         return self.get_reader()
 
