@@ -21,19 +21,6 @@ class TestHeader(unittest.TestCase):
         self.assertEqual(chunk.get(1), record2)
         self.assertEqual(chunk.get(2), record3)
 
-    def test_clear(self):
-        chunk = Chunk()
-        record1 = b'china'
-        record2 = b'usa'
-        record3 = b'russia'
-        chunk.add(record1)
-        chunk.add(record2)
-        chunk.add(record3)
-        self.assertEqual(3, chunk.total_count())
-
-        chunk.clear()
-        self.assertEqual(0, chunk.total_count())
-
     def test_write_and_parse(self):
         chunk = Chunk()
         record1 = b'china'

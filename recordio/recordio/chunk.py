@@ -109,12 +109,6 @@ class Chunk(object):
         """
         return self._records[index]
 
-    def clear(self):
-        """ Clear and reset the current chunk for reuse
-        """
-        self._records = []
-        self._num_bytes = 0
-
     def write(self, out_file, compressor):
         """ Write the chunk to the output file.
 
