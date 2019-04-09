@@ -18,50 +18,35 @@ RecordIO is such a file format.
 ```python
 import recordio
 
-data = open('demo.recordio', 'wb')
-max_chunk_size = 1024
-writer = recordio.Writer(data, max_chunk_size)
-writer.write('abc')
-writer.write('edf')
-writer.flush()
-data.close()
+# write
+with recordio.File('demo.recordio', 'w') as rdio_w: 
+    rdio_w.write('abc')
+    rdio_w.write('def')
 ```
 
 ## Read
 
 ```python
-import recordio
+with recordio.File('demo.recordio', 'r') as rdio_r:
+    # Random access
+    for i in range(rdio_r.count()):
+        print(rdio_r.get(i))
 
-data = open('demo.recordio', 'rb')   
-index = recordio.FileIndex(data)
-print('Total file records: ' + str(index.total_records()))
+    # Range reading
+    for record in rdio_r.get_reader(2, 10):
+        print(record)
 
-for i in range(index.total_chunks()):
-  reader = recordio.Reader(data, index.chunk_offset(i))
-  print('Total chunk records: ' + str(reader.total_count()))
-
-  while reader.has_next():
-    print('record value: ' + reader.next())
-
-data.close()
+    # Direct iteration
+    for record in rdio_r:
+        print(record)
 ```
 
-## RecordIO File
-```python
-import recordio
+## Unittest
 
-# write
-rdio_w = recordio.File('demo.recordio', 'w')
-rdio_w.write('abc')
-rdio_w.write('def')
-rdio_w.close()
+In this directory:
 
-# read
-rdio_r = recordio.File('demo.recordio', 'r')
-iterator = rdio_r.iterator()       
-while iterator.has_next():
-    record = iterator.next()
-rdio_r.close()
+```bash
+python -m unittest recordio/recordio/*_test.py
 ```
 
 ## Packaging

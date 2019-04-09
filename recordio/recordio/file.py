@@ -14,11 +14,12 @@ class File(object):
         Raises:
           ValueError: invalid open mode input param.
         """
-        self._mode = mode
         if mode == 'r' or mode == 'read':
+            self._mode = 'r'
             self._data = open(file_path, 'rb')
             self._index = FileIndex(self._data)
         elif mode == 'w' or mode == 'write':
+            self._mode = 'w'
             self._data = open(file_path, 'wb')
             self._writer = Writer(self._data, max_chunk_size)
         else:
@@ -39,41 +40,27 @@ class File(object):
 
         Returns:
           Iterator of dataset
-
-        Raises:
-          RuntimeError: wrong open mode.
         """
-        if self._mode != 'r' and self._mode != 'read':
+        return self.get_reader()
+
+    def get_reader(self, start=0, end=None):
+        """Return a reader for the given range."""
+
+        if self._mode != 'r':
             raise RuntimeError('Should be under read mode')
 
-        # Starts from the first chunk
-        self._chunk_index = 0
-        # Initialize the first chunk
-        self._reader = RangeReader(self._data, self._index)
-
-        return self
-
-    def __next__(self):
-        """ For iterate operation
-
-        Returns:
-          The next value in dataset
-
-        Raises:
-          StopIteration: Reach the end of dataset
-        """
-        return next(self._reader)
+        return RangeReader(self._data, self._index, start, end)
 
     def write(self, record):
         """ Write a record into recordio file.
 
         Arguments:
           record: Record value String.
-         
+
         Raises:
           RuntimeError: wrong open mode.
         """
-        if self._mode != 'w' and self._mode != 'write':
+        if self._mode != 'w':
             raise RuntimeError('Should be under write mode')
 
         self._writer.write(record)
@@ -81,7 +68,7 @@ class File(object):
     def close(self):
         """ Close the data file
         """
-        if self._mode == 'w' or self._mode == 'write':
+        if self._mode == 'w':
             self._writer.flush()
         self._data.close()
 
@@ -97,28 +84,14 @@ class File(object):
         Raises:
           RuntimeError: wrong open mode.
         """
-        if self._mode != 'r' and self._mode != 'read':
+        if self._mode != 'r':
             raise RuntimeError('Should be under read mode')
 
-        reader = RangeReader(self._data, self._index, index, index + 1)
+        reader = self.get_reader(index, index + 1)
         try:
           return next(reader)
         except StopIteration:
           raise IndexError()
-
-    def get_index(self):
-        """ Returns the recordio file index
-
-        Returns:
-          Index of recordio file
-
-        Raises:
-          RuntimeError: wrong open mode.
-        """
-        if self._mode != 'r' and self._mode != 'read':
-            raise RuntimeError('Should be under read mode')
-
-        return self._index
 
     def count(self):
         """ Return total record count of the recordio file
@@ -129,7 +102,7 @@ class File(object):
         Raises:
           RuntimeError: wrong open mode.
         """
-        if self._mode != 'r' and self._mode != 'read':
+        if self._mode != 'r':
             raise RuntimeError('Should be under read mode')
 
         return self._index.total_records()

@@ -1,8 +1,7 @@
 import unittest
 import tempfile
-from torch_dataset import TorchDataset 
-from recordio.recordio.file_index import FileIndex 
-from recordio.recordio.file import File
+from .torch_dataset import TorchDataset 
+from recordio import File
 
 
 class TestTorchDataset(unittest.TestCase):
