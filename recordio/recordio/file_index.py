@@ -112,6 +112,3 @@ class FileIndex(object):
             Total number of chunks
         """
         return len(self._chunk_data)
-    
-    def __getitem__(self, chunk_index):
-        return self._chunk_data[chunk_index]

@@ -10,6 +10,76 @@ class Chunk(object):
     """ A chunk is part of the original input file and is composed of one or more records
     """
 
+    @classmethod
+    def parse(cls, in_file, offset):
+        """ Read and parse a chunk from input file at offset.
+
+        Arguments:
+            in_file: The input file contains the original data.
+            offset: The chunk start offset in the file. 
+
+        Returns:
+            The parsed chunk.
+
+        Raises:
+            ValueError: invalid offset.
+            RuntimeError: checksum check failed. 
+            ValueError: invalid compressor.
+        """
+        file_size = os.path.getsize(in_file.name)
+        if offset < 0 or offset >= (file_size - int_word_len - 1):
+            raise ValueError(
+                'invalid offset {}, total file size {}'.format(
+                    offset, file_size))
+
+        in_file.seek(offset)
+
+        header = Header()
+        header.parse(in_file, offset)
+        compressed_byte_arr = in_file.read(header.compress_size())
+        uncompressed_byte_arr = None
+
+        real_checksum = crc32(compressed_byte_arr)
+        raw_checksum = header.checksum()
+
+        if real_checksum != raw_checksum:
+            raise RuntimeError(
+                "checksum check failed for raw checksum {} and new checksum {}".format(
+                    raw_checksum, real_checksum))
+
+        compressor = header.compressor()
+        # No compression
+        if compressor is Compressor.no_compression:
+            uncompressed_byte_arr = compressed_byte_arr
+        # Snappy
+        elif compressor is Compressor.snappy:
+            uncompressed_byte_arr = snappy.uncompress(compressed_byte_arr)
+        # Gzip
+        elif compressor is Compressor.gzip:
+            uncompressed_byte_arr = gzip.decompress(compressed_byte_arr)
+        else:
+            raise ValueError('invalid compressor')
+
+        curr_index = 0
+        s_index = 0
+        e_index = 0
+        total_bytes = 0
+
+        chunk = Chunk()
+        for _ in range(header.total_count()):
+            rc_len = int.from_bytes(
+                uncompressed_byte_arr[curr_index:curr_index + int_word_len], endian)
+            s_index = curr_index + int_word_len
+            e_index = s_index + rc_len
+            total_bytes += rc_len
+
+            # Read real data
+            chunk.add(uncompressed_byte_arr[s_index:e_index])
+            curr_index += int_word_len
+            curr_index += rc_len
+
+        return chunk
+
     def __init__(self):
         # Current records stored in this chunk
         self._records = []
@@ -97,74 +167,6 @@ class Chunk(object):
 
         # Write the compressed data body
         out_file.write(compressed_data)
-
-        return True
-
-    def parse(self, in_file, offset):
-        """ Read and parse the next chunk from the input file.
-
-        Arguments:
-            in_file: The input file contains the original data.
-            offset: The chunk start offset in the file. 
-
-        Returns:
-            True if the parse operation execute successfully.
-
-        Raises:
-            ValueError: invalid offset.
-            RuntimeError: checksum check failed. 
-            ValueError: invalid compressor.
-        """
-        file_size = os.path.getsize(in_file.name)
-        if offset < 0 or offset >= (file_size - int_word_len - 1):
-            raise ValueError(
-                'invalid offset {}, total file size {}'.format(
-                    offset, file_size))
-
-        in_file.seek(offset)
-
-        header = Header()
-        header.parse(in_file, offset)
-        compressed_byte_arr = in_file.read(header.compress_size())
-        uncompressed_byte_arr = None
-
-        real_checksum = crc32(compressed_byte_arr)
-        raw_checksum = header.checksum()
-
-        if real_checksum != raw_checksum:
-            raise RuntimeError(
-                "checksum check failed for raw checksum {} and new checksum {}".format(
-                    raw_checksum, real_checksum))
-
-        compressor = header.compressor()
-        # No compression
-        if compressor is Compressor.no_compression:
-            uncompressed_byte_arr = compressed_byte_arr
-        # Snappy
-        elif compressor is Compressor.snappy:
-            uncompressed_byte_arr = snappy.uncompress(compressed_byte_arr)
-        # Gzip
-        elif compressor is Compressor.gzip:
-            uncompressed_byte_arr = gzip.decompress(compressed_byte_arr)
-        else:
-            raise ValueError('invalid compressor')
-
-        self.clear()
-        curr_index = 0
-        s_index = 0
-        e_index = 0
-        total_bytes = 0
-        for _ in range(header.total_count()):
-            rc_len = int.from_bytes(
-                uncompressed_byte_arr[curr_index:curr_index + int_word_len], endian)
-            s_index = curr_index + int_word_len
-            e_index = s_index + rc_len
-            total_bytes += rc_len
-
-            # Read real data
-            self.add(uncompressed_byte_arr[s_index:e_index])
-            curr_index += int_word_len
-            curr_index += rc_len
 
         return True
 
