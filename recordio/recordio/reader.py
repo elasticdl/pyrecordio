@@ -30,8 +30,7 @@ class RangeReader(object):
             raise StopIteration()
 
         if self._chunk is None:
-            self._chunk = Chunk()
-            self._chunk.parse(
+            self._chunk = Chunk.parse(
                 self._data_file, self._file_index.chunk_offset(self._chunk_idx)
             )
 
