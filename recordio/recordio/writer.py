@@ -28,14 +28,13 @@ class Writer(object):
         """
         if self._chunk.num_bytes() + len(record) > self._max_chunk_size:
             self._chunk.write(self._out_file, self._compressor)
-            self._chunk.clear()
-
+            self._chunk = Chunk()
         self._chunk.add(record)
-
         return True
 
     def flush(self):
         """ flush the remaining records to chunk file.
         """
-        self._chunk.write(self._out_file, self._compressor)
-        self._chunk.clear()
+        if self._chunk is not None:
+            self._chunk.write(self._out_file, self._compressor)
+            self._chunk = Chunk()
