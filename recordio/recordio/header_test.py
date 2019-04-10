@@ -14,12 +14,16 @@ class TestHeader(unittest.TestCase):
         compress_size = 10240
 
         with tempfile.NamedTemporaryFile() as tmp_file:
-            header1 = Header(num_records, checksum, compressor, compress_size)
+            header1 = Header(
+                num_records=num_records,
+                checksum=checksum,
+                compressor=compressor,
+                compress_size=compress_size,
+            )
             header1.write(tmp_file)
 
             tmp_file.seek(0)
-            header2 = Header()
-            header2.parse(tmp_file, 0)
+            header2 = Header.parse(tmp_file, 0)
 
         self.assertEqual(num_records, header2.total_count())
         self.assertEqual(checksum, header2.checksum())
@@ -27,5 +31,5 @@ class TestHeader(unittest.TestCase):
         self.assertEqual(compress_size, header2.compress_size())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

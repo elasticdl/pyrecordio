@@ -7,14 +7,9 @@ class Header(object):
     """Header of recordio file.
     """
 
-    def __init__(
-            self,
-            num_records=0,
-            checksum=None,
-            compressor=None,
-            compress_size=0):
-        # Magic number.
-        self._magic_number = 0x01020304
+    MAGIC_NUMBER = 0x01020304
+
+    def __init__(self, *, num_records, checksum, compressor, compress_size):
         # Total record number of the chunk.
         self._num_records = num_records
         # Checksum of the chunk.
@@ -30,40 +25,11 @@ class Header(object):
         Arguments:
             out_file: The destination file.
         """
-        out_file.write(self._magic_number.to_bytes(int_word_len, endian))
+        out_file.write(Header.MAGIC_NUMBER.to_bytes(int_word_len, endian))
         out_file.write(self._num_records.to_bytes(int_word_len, endian))
         out_file.write(self._checksum.to_bytes(int_word_len, endian))
         out_file.write(self._compressor.value.to_bytes(int_word_len, endian))
         out_file.write(self._compress_size.to_bytes(int_word_len, endian))
-
-    def parse(self, in_file, offset):
-        """ Read and parse header content from input file
-
-        Arguments:
-            in_file: The source file.
-            offset: The header start offset in the file. 
-
-        Raises:
-            ValueError: invalid offset.
-        """
-
-        file_size = os.path.getsize(in_file.name)
-        if offset < 0 or offset >= (file_size - int_word_len - 1):
-            raise ValueError(
-                'invalid offset {} and total file size {}'.format(
-                    offset, file_size))
-
-        in_file.seek(offset)
-
-        self._magic_number = int.from_bytes(in_file.read(int_word_len), endian)
-        self._num_records = int.from_bytes(in_file.read(int_word_len), endian)
-        self._checksum = int.from_bytes(in_file.read(int_word_len), endian)
-        self._compressor = Compressor(
-            int.from_bytes(
-                in_file.read(int_word_len),
-                endian))
-        self._compress_size = int.from_bytes(
-            in_file.read(int_word_len), endian)
 
     def checksum(self):
         """ Return the checksum of the data bytes in the chunk
@@ -97,9 +63,56 @@ class Header(object):
         """
         return self._compress_size
 
+    @staticmethod
+    def parse(in_file, offset):
+        """ Read and parse header content from input file
+
+        Arguments:
+            in_file: The source file.
+            offset: The header start offset in the file. 
+
+        Raises:
+            ValueError: invalid offset.
+        
+        Returns:
+            A constructed Header object.
+        """
+
+        file_size = os.path.getsize(in_file.name)
+        if offset < 0 or offset >= (file_size - int_word_len - 1):
+            raise ValueError(
+                "invalid offset {} and total file size {}".format(
+                    offset, file_size
+                )
+            )
+
+        in_file.seek(offset)
+
+        magic_number = int.from_bytes(in_file.read(int_word_len), endian)
+        if magic_number != Header.MAGIC_NUMBER:
+            raise ValueError(
+                "Wrong magic number in header, possible file corruption. "
+                "Offset: {}".format(offset)
+            )
+
+        num_records = int.from_bytes(in_file.read(int_word_len), endian)
+        checksum = int.from_bytes(in_file.read(int_word_len), endian)
+        compressor = Compressor(
+            int.from_bytes(in_file.read(int_word_len), endian)
+        )
+        compress_size = int.from_bytes(in_file.read(int_word_len), endian)
+
+        return Header(
+            num_records=num_records,
+            checksum=checksum,
+            compressor=compressor,
+            compress_size=compress_size,
+        )
+
 
 class Compressor(Enum):
     """Compression algorithm used for recordio file"""
+
     # Store the raw data without any compression.
     no_compression = 1
     # Compression algorithm from google which aims for very high speeds and

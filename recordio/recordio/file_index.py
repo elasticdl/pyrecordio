@@ -39,10 +39,9 @@ class FileIndex(object):
         """
         file_size = os.path.getsize(in_file.name)
         offset = 0
-        header = Header()
 
         while offset < file_size:
-            header.parse(in_file, offset)
+            header = Header.parse(in_file, offset)
             self._chunk_data.append(_ChunkData(offset, header.compress_size(), header.total_count()))
             self._total_records += header.total_count()
             offset += header.compress_size() + header_size

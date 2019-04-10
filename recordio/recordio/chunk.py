@@ -10,8 +10,8 @@ class Chunk(object):
     """ A chunk is part of the original input file and is composed of one or more records
     """
 
-    @classmethod
-    def parse(cls, in_file, offset):
+    @staticmethod
+    def parse(in_file, offset):
         """ Read and parse a chunk from input file at offset.
 
         Arguments:
@@ -34,8 +34,7 @@ class Chunk(object):
 
         in_file.seek(offset)
 
-        header = Header()
-        header.parse(in_file, offset)
+        header = Header.parse(in_file, offset)
         compressed_byte_arr = in_file.read(header.compress_size())
         uncompressed_byte_arr = None
 
@@ -153,10 +152,10 @@ class Chunk(object):
         # Write chunk header into output file
         checksum = crc32(compressed_data)
         header = Header(
-            self.total_count(),
-            checksum,
-            compressor,
-            len(compressed_data))
+            num_records=self.total_count(),
+            checksum=checksum,
+            compressor=compressor,
+            compress_size=len(compressed_data))
         header.write(out_file)
 
         # Write the compressed data body
