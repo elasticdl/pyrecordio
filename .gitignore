@@ -1,4 +1,7 @@
-/.vscode/*
+/.vscode/
 *.pyc
 /bazel-**
-**/build/**
+**/build/
+/dist/
+/pyrecordio.egg-info/
+/artifacts/

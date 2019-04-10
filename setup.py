@@ -2,13 +2,15 @@
 # Local installation:
 #     pip3 install .
 # Make package:
-#     python3 setup.py bdist
+#     python3 setup.py bdist_wheel
+# Upload package:
+#     twine upload dist/*
 
 from setuptools import setup, find_packages
 
 install_requires=['crc32c', 'python-snappy']
 
-setup(name='recordio',
+setup(name='pyrecordio',
       version='0.0.1',
       description='recordio file format support',
       url='https://github.com/ElasticDL/pyrecordio',
