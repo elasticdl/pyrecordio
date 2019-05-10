@@ -16,13 +16,13 @@ class File(object):
             ValueError: invalid open mode input param.
 
         For writes, content bytes will first be encoded by encoder, then
-        compressed by compressor, then write to file as a record.
+        compressed by compressor, then written to file as a record.
 
         For reads, a record will first be read from file, then decompressed
-        by compressor, then decoded by decoder, the return to caller.
+        by compressor, then decoded by decoder, then returned to caller.
 
-        Note that unless decoder is reverse function of encoder, the content
-        read back is not the same as the content written. 
+        Note that unless decoder is a reverse function of encoder, the content
+        read back may not be the same as the content written.
         """
         if mode == 'r' or mode == 'read':
             self._mode = 'r'
