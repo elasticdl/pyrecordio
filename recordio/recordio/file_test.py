@@ -1,4 +1,5 @@
 import unittest
+import codecs
 import tempfile
 from .file import File
 
@@ -24,10 +25,10 @@ data_source = [
     b'brazil',
     b'barbados']
 
-def write_recordio_file():
+def write_recordio_file(encoder=None):
     tmp_file = tempfile.NamedTemporaryFile(delete=False)
 
-    with File(tmp_file.name, 'w') as rdio_w:
+    with File(tmp_file.name, 'w', encoder=encoder) as rdio_w:
         for data in data_source:
             rdio_w.write(data)
     
@@ -47,6 +48,19 @@ class TestRecordIOFile(unittest.TestCase):
     def test_read_by_iter(self):
         file_name = write_recordio_file()
         with File(file_name, 'r') as rdio_r:
+            self.assertEqual(list(rdio_r), data_source)
+
+    def test_encoder(self):
+        encoder = lambda x : codecs.encode(x.decode(), "rot_13").encode()
+        file_name = write_recordio_file(encoder=encoder)
+        with File(file_name, 'r') as rdio_r:
+            self.assertEqual(list(rdio_r), list(map(encoder, data_source)))
+
+    def test_decoder(self):
+        encoder = lambda x : codecs.encode(x.decode(), "rot_13").encode()
+        file_name = write_recordio_file(encoder=encoder)
+        decoder = lambda x : codecs.decode(x.decode(), "rot_13").encode()
+        with File(file_name, 'r', decoder=decoder) as rdio_r:
             self.assertEqual(list(rdio_r), data_source)
 
 if __name__ == '__main__':
