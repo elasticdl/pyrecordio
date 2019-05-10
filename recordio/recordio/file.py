@@ -8,11 +8,21 @@ class File(object):
     """ Simple Wrapper for FileIndex, Writer and Reader for usability.
     """
 
-    def __init__(self, file_path, mode, *, max_chunk_size=1024, compressor=Compressor.snappy):
+    def __init__(self, file_path, mode, *, max_chunk_size=1024,
+        compressor=Compressor.snappy, encoder=None, decoder=None):
         """ Initialize according open mode
 
         Raises:
             ValueError: invalid open mode input param.
+
+        For writes, content bytes will first be encoded by encoder, then
+        compressed by compressor, then written to file as a record.
+
+        For reads, a record will first be read from file, then decompressed
+        by compressor, then decoded by decoder, then returned to caller.
+
+        Note that unless decoder is a reverse function of encoder, the content
+        read back may not be the same as the content written.
         """
         if mode == 'r' or mode == 'read':
             self._mode = 'r'
@@ -24,6 +34,9 @@ class File(object):
             self._writer = Writer(self._data, max_chunk_size)
         else:
             raise ValueError('mode value should be \'read\' or \'write\'')
+        
+        self._encoder = encoder
+        self._decoder = decoder
 
     def __enter__(self):
         """ For `with` statement
@@ -49,7 +62,8 @@ class File(object):
         if self._mode != 'r':
             raise RuntimeError('Should be under read mode')
 
-        return RangeReader(self._data, self._index, start, end)
+        it = RangeReader(self._data, self._index, start, end)
+        return map(self._decoder, it) if self._decoder else it
 
     def write(self, record):
         """ Write a record into recordio file.
@@ -63,7 +77,8 @@ class File(object):
         if self._mode != 'w':
             raise RuntimeError('Should be under write mode')
 
-        self._writer.write(record)
+        encoded = self._encoder(record) if self._encoder else record
+        self._writer.write(encoded)
 
     def close(self):
         """ Close the data file

@@ -11,7 +11,7 @@ from setuptools import setup, find_packages
 install_requires=['crc32c', 'python-snappy']
 
 setup(name='pyrecordio',
-      version='0.0.1',
+      version='0.0.2',
       description='recordio file format support',
       url='https://github.com/ElasticDL/pyrecordio',
       author='Ant',
